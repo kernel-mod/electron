@@ -1,7 +1,4 @@
 const { logger } = require("./core/global");
+logger.log("Loading Kernel.");
 
-module.exports = (injectionPath) => {
-	logger.log("Loading Kernel.");
-
-	require("./injector")(injectionPath);
-};
+require("./injector");
