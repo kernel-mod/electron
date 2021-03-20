@@ -12,9 +12,9 @@ module.exports = class Utilities {
 		return "UNKNOWN";
 	}
 
-	static async injectRendererModule(path) {
-		if (module.exports.processLocation() !== "PRELOAD") {
-			throw new Error("no");
+	static async injectRendererModule(path, sync = false) {
+		if (module.exports.processLocation() === "MAIN") {
+			throw new Error("No.");
 		}
 
 		while (!document.documentElement) {
@@ -23,8 +23,8 @@ module.exports = class Utilities {
 
 		const script = Object.assign(document.createElement("script"), {
 			type: "module",
-			async: "true",
-			src: `esm://${path}`,
+			async: (!sync).toString(),
+			src: `esm${sync ? "-sync" : ""}://${path}`,
 		});
 		document.documentElement.appendChild(script);
 		script.remove();

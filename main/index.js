@@ -8,6 +8,7 @@ require("./ipc");
 
 protocol.registerSchemesAsPrivileged([
 	{ scheme: "esm", privileges: { bypassCSP: true } },
+	{ scheme: "esm-sync", privileges: { bypassCSP: true } },
 ]);
 
 app.on("ready", () => {

@@ -1,4 +1,4 @@
 // TODO: Pass global and renderer cores.
-// import "./test";
+import "./test";
 console.log("get prenderered on lmao");
 console.log(webpackJsonp);

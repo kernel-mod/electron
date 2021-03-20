@@ -1,5 +1,6 @@
 dependencies:
   '@babel/core': 7.13.10
+  '@babel/plugin-proposal-class-properties': 7.13.0_@babel+core@7.13.10
   '@babel/preset-env': 7.13.10_@babel+core@7.13.10
 lockfileVersion: 5.2
 packages:
@@ -1308,4 +1309,5 @@ packages:
       integrity: sha512-PqSoPh/pWetQ2phoj5RLiaqIk4kCNwoV3CI+LfGmWLKI3rE3kl1h59XpX2BjgDrmbxD9ARtQobPGU1SguCYuQg==
 specifiers:
   '@babel/core': ^7.13.10
+  '@babel/plugin-proposal-class-properties': ^7.13.0
   '@babel/preset-env': ^7.13.10
