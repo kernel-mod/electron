@@ -7,15 +7,15 @@ require("./injectBrowserWindow");
 require("./ipc");
 
 protocol.registerSchemesAsPrivileged([
-	{ scheme: 'esm', privileges: { bypassCSP: true } }
-])
+	{ scheme: "esm", privileges: { bypassCSP: true } },
+]);
 
 app.on("ready", () => {
 	// Remove CSP.
 	require("./removeCSP");
 
 	// Add ESM Loader
-	require('./esmLoader');
+	require("./esmLoader");
 
 	// Start Discord.
 	require("./startDiscord");

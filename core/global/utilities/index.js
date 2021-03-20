@@ -13,15 +13,20 @@ module.exports = class Utilities {
 	}
 
 	static async injectRendererModule(path) {
-		if (!module.exports.processLocation() === 'MAIN') throw new Error('no');
-		if (!document.head) {
-			await new Promise(ret => document.addEventListener('DOMContentLoaded', ret))
+		if (module.exports.processLocation() !== "PRELOAD") {
+			throw new Error("no");
 		}
-		const s = document.createElement('script');
-		s.type = 'module';
-		s.async = true;
-		s.src = `esm://${path}`;
-		document.head.appendChild(s);
-		s.remove();
+
+		while (!document.documentElement) {
+			await new Promise((resolve) => setImmediate(() => resolve()));
+		}
+
+		const script = Object.assign(document.createElement("script"), {
+			type: "module",
+			async: "true",
+			src: `esm://${path}`,
+		});
+		document.documentElement.appendChild(script);
+		script.remove();
 	}
 };
