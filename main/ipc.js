@@ -1,6 +1,39 @@
-const { ipcMain } = require("electron");
+const { ipcMain, session } = require("electron");
 
 // Set up the IPC to send the data from the InjectedBrowserWindow to the preload.
 ipcMain.on("KERNEL_PRELOAD_DATA", (event) => {
 	event.returnValue = event.sender.__KERNEL__;
+});
+
+let senderHooks = new Map();
+
+session.defaultSession.webRequest.onBeforeRequest({ urls: ['*://*/*.js'] }, (details, cb) => {
+	if (senderHooks.has(details.webContentsId)) {
+		console.log('holding request ' + details.id)
+		senderHooks.get(details.webContentsId).reqs.push(() => {
+			cb({})
+			console.log('continued request ' + details.id);
+		});
+	} else {
+		cb({});
+	}
+});
+
+ipcMain.on("KERNEL_SETUP_RENDERER_HOOK", (event) => {
+	const reqs = [];
+	const finish = () => {
+		reqs.forEach(r => {
+			r();
+		});
+		senderHooks.delete(event.sender.id);
+	};
+	senderHooks.set(event.sender.id, {
+		finish, reqs
+	});
+	event.returnValue = true;
+});
+
+ipcMain.on("KERNEL_FINISH_RENDERER_HOOK", (event) => {
+	senderHooks.get(event.sender.id).finish();
+	event.returnValue = true;
 });
