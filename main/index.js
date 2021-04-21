@@ -1,8 +1,10 @@
-const { app, protocol } = require("electron");
-const { logger } = require("../core/global");
+import logger from "kernel/logger";
+import { app, protocol } from "electron";
+
+logger.log("Loading Kernel.");
 
 // Replace Electron's BrowserWindow with our own.
-require("./injectBrowserWindow");
+import("./injectBrowserWindow");
 
 protocol.registerSchemesAsPrivileged([
 	{ scheme: "esm", privileges: { bypassCSP: true } },
@@ -16,8 +18,8 @@ app.on("ready", () => {
 	// Remove CSP.
 	require("./removeCSP");
 
-	// Add ESM Loader
-	require("./esmLoader");
+	// Add Renderer Loader
+	require("./rendererLoader");
 
 	// Start Discord.
 	require("./startDiscord");

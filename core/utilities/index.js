@@ -12,8 +12,8 @@ module.exports = class Utilities {
 		return "UNKNOWN";
 	}
 
-	static async injectRendererModule(path, sync = false, onload) {
-		if (module.exports.processLocation() === "MAIN") {
+	static async injectRendererModule({ path, sync = false, onload }) {
+		if (Utilities.processLocation() === "MAIN") {
 			throw new Error("No.");
 		}
 
@@ -22,11 +22,13 @@ module.exports = class Utilities {
 			async: (!sync).toString(),
 			src: `esm${sync ? "-sync" : ""}://${path}`,
 		});
-		if (onload) script.addEventListener('load', onload);
+		if (onload) script.addEventListener("load", onload);
 		while (!document.documentElement) {
-			await new Promise(resolve => setImmediate(resolve));
+			await new Promise((resolve) => setImmediate(resolve));
 		}
 		document.documentElement.appendChild(script);
 		script.remove();
 	}
-};
+}
+
+if (!module) eval("export default module.exports;");

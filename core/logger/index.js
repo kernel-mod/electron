@@ -65,3 +65,5 @@ module.exports = class Logger {
 		return newArgs;
 	}
 };
+
+if (!module) eval("export default module.exports;");

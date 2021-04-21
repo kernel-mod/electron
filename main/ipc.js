@@ -1,4 +1,4 @@
-const { ipcMain, session } = require("electron");
+import { ipcMain, session } from "electron";
 
 // Set up the IPC to send the data from the InjectedBrowserWindow to the preload.
 ipcMain.on("KERNEL_PRELOAD_DATA", (event) => {
@@ -7,28 +7,30 @@ ipcMain.on("KERNEL_PRELOAD_DATA", (event) => {
 
 let senderHooks = new Map();
 
-session.defaultSession.webRequest.onBeforeRequest({ urls: ['*://*/*.js'] }, (details, cb) => {
-	if (senderHooks.has(details.webContentsId)) {
-		console.log('holding request ' + details.id)
-		senderHooks.get(details.webContentsId).reqs.push(() => {
-			cb({})
-			console.log('continued request ' + details.id);
-		});
-	} else {
-		cb({});
+session.defaultSession.webRequest.onBeforeRequest(
+	{ urls: ["*://*/*.js"] },
+	(details, cb) => {
+		if (senderHooks.has(details.webContentsId)) {
+			senderHooks.get(details.webContentsId).reqs.push(() => {
+				cb({});
+			});
+		} else {
+			cb({});
+		}
 	}
-});
+);
 
 ipcMain.on("KERNEL_SETUP_RENDERER_HOOK", (event) => {
 	const reqs = [];
 	const finish = () => {
-		reqs.forEach(r => {
+		reqs.forEach((r) => {
 			r();
 		});
 		senderHooks.delete(event.sender.id);
 	};
 	senderHooks.set(event.sender.id, {
-		finish, reqs
+		finish,
+		reqs,
 	});
 	event.returnValue = true;
 });

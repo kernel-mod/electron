@@ -1,25 +1,21 @@
 // Handles loading ESModules in the renderer process.
 
-const babel = require("@babel/core");
-const { protocol } = require("electron");
-const fs = require("fs");
-const path = require("path");
-const { logger } = require("../core/global");
-
-function plugin(pluginName) {
-	return path.resolve(__dirname, "..", "node_modules", pluginName);
-}
+import babel from "@babel/core";
+import { protocol } from "electron";
+import fs from "fs";
+import path from "path";
+import logger from "kernel/logger";
+import getModule from "../transpiler/getModule";
 
 const babelOptions = {
 	targets: {
 		electron: process.versions.electron,
 		esmodules: true,
 	},
-	plugins: [plugin("@babel/plugin-proposal-class-properties")],
+	plugins: [getModule("@babel/plugin-proposal-class-properties")],
 };
 
 // DO NOT USE A TRY CATCH YOU WILL REGRET IT
-
 protocol.registerBufferProtocol("esm-sync", (request, callback) => {
 	let url = request.url.replace("esm-sync://", "");
 

@@ -1,7 +1,7 @@
-const { logger } = require("../core/global");
-logger.log("Removing CSP.");
+import logger from "kernel/logger";
+import { session } from "electron";
 
-const { session } = require("electron");
+logger.log("Removing CSP.");
 
 const headers = [
 	"content-security-policy-report-only",

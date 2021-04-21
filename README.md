@@ -1,5 +1,10 @@
 # Kernel
 
+- [Kernel](#kernel)
+  - [`/app-*/resources/app/` Contents](#app-resourcesapp-contents)
+    - [`index.js`](#indexjs)
+    - [`package.json`](#packagejson)
+
 ## `/app-*/resources/app/` Contents
 
 ### `index.js`
