@@ -2,15 +2,19 @@ const babel = require("@babel/core");
 const path = require("path");
 const getModule = require("./getModule");
 
+const targets = {
+	electron: process.versions.electron,
+	node: process.versions.node
+};
+
 module.exports = (code) => {
 	return babel.transformSync(code, {
+		targets,
 		presets: [
 			[
 				getModule("@babel/preset-env"),
 				{
-					targets: {
-						electron: process.versions.electron,
-					},
+					targets
 				},
 			],
 			getModule("@babel/preset-react"),

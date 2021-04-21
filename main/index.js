@@ -4,23 +4,25 @@ import { app, protocol } from "electron";
 logger.log("Loading Kernel.");
 
 // Replace Electron's BrowserWindow with our own.
-import("./injectBrowserWindow");
+require("./injectBrowserWindow");
 
 protocol.registerSchemesAsPrivileged([
-	{ scheme: "esm", privileges: { bypassCSP: true } },
-	{ scheme: "esm-sync", privileges: { bypassCSP: true } },
+	{ scheme: "import", privileges: { bypassCSP: true } },
+	{ scheme: "import-sync", privileges: { bypassCSP: true } },
 ]);
 
 app.on("ready", () => {
-	// Set up IPC.
-	require("./ipc");
-
-	// Remove CSP.
-	require("./removeCSP");
-
-	// Add Renderer Loader
-	require("../transpiler/rendererLoader");
-
-	// Start Discord.
-	require("./startDiscord");
+	console.time("Loading Time")
+	Promise.all([
+		// Set up IPC.
+		import("./ipc"),
+		// Remove CSP.
+		import("./removeCSP"),
+		// Add Renderer Loader
+		import("../transpiler/rendererLoader"),
+	]).then(() => {
+		console.timeEnd("Loading Time")
+		// Start Discord.
+		require("./startDiscord");
+	});
 });

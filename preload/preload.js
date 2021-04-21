@@ -8,7 +8,7 @@ logger.error("get preloaded on lmao");
 
 ipcRenderer.sendSync("KERNEL_SETUP_RENDERER_HOOK");
 injectRendererModule({
-	path: "./renderer/index",
+	path: "./renderer",
 	sync: true,
 	onload: () => ipcRenderer.sendSync("KERNEL_FINISH_RENDERER_HOOK"),
 });

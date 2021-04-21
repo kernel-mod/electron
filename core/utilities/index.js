@@ -19,7 +19,7 @@ export async function injectRendererModule({ path, sync = false, onload }) {
 	const script = Object.assign(document.createElement("script"), {
 		type: "module",
 		async: (!sync).toString(),
-		src: `esm${sync ? "-sync" : ""}://${path}`,
+		src: `import${sync ? "-sync" : ""}://${path}`,
 	});
 	if (onload) script.addEventListener("load", onload);
 	while (!document.documentElement) {

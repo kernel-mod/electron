@@ -1,51 +1,7 @@
 // TODO: Pass global and renderer cores.
-import Dexie from "../node_modules/dexie/dist/dexie.mjs";
-import "./test";
-// import gsetw from "../core/global/logger/index";
-
-function gsetw(object, nodePath, before = false) {
-	return new Promise((resolve, reject) => {
-		if (typeof object !== "object") reject("Non-object in tree.");
-		if (typeof nodePath !== "string") reject("Node path is not a string.");
-		nodePath = nodePath.split(".").filter((node) => node.trim() !== "");
-
-		while (
-			nodePath.length > 0 &&
-			object[nodePath[0]] !== null &&
-			object[nodePath[0]] !== undefined
-		) {
-			if (typeof object !== "object") reject("Non-object in tree.");
-			object = object[nodePath[0]];
-			nodePath.shift();
-		}
-
-		if (typeof object !== "object") reject("Non-object in tree.");
-
-		if (nodePath.length === 0) {
-			return resolve(object);
-		}
-
-		Object.defineProperty(object, nodePath[0], {
-			get: () => {
-				return undefined;
-			},
-			set: (newObject) => {
-				function dispatch() {
-					nodePath.shift();
-					if (nodePath.length > 0) {
-						return resolve(gsetw(newObject, nodePath.join(".")));
-					}
-					resolve(newObject);
-				}
-				if (before) dispatch();
-				Object.defineProperty(object, nodePath[0], { value: newObject });
-				if (!before) dispatch();
-			},
-			configurable: true,
-			enumerable: true,
-		});
-	});
-}
+import "./renderer/test";
+import gsetw from "./node_modules/gsetw";
+// import logger from "./core/logger";
 
 gsetw(window, "webpackJsonp").then((newWebpackJsonp) => {
 	const originalPush = { ...webpackJsonp }.push;
@@ -64,18 +20,31 @@ gsetw(window, "webpackJsonp").then((newWebpackJsonp) => {
 						Object.defineProperty(exports, "__esModule", {
 							value: !0,
 						});
-						exports.setLogFn = () => { };
+						exports.setLogFn = () => {};
 						exports.default = class {
-							log() { }
-							info() { }
-							warn() { }
-							error() { }
-							trace() { }
-							verbose() { }
+							log(...args) {
+								console.debug(...args);
+							}
+							info(...args) {
+								console.debug(...args);
+							}
+							warn(...args) {
+								console.debug(...args);
+							}
+							error(...args) {
+								console.debug(...args);
+							}
+							trace(...args) {
+								console.debug(...args);
+							}
+							verbose(...args) {
+								console.debug(...args);
+							}
 							name = "";
 						};
 					} else {
 						originalModule(moduleData, exports, webpackRequire);
+						window?.DiscordNative?.window?.setDevtoolsCallbacks?.(null, null);
 					}
 				};
 			}

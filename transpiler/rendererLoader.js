@@ -3,64 +3,81 @@
 import { protocol } from "electron";
 import * as fs from "fs";
 import * as path from "path";
-import logger from "kernel/logger";
-import { default as async, sync } from './esmodules';
+import { Logger } from "kernel/logger";
+import { default as async, sync } from "./esm";
 
-// DO NOT USE A TRY CATCH YOU WILL REGRET IT
-protocol.registerBufferProtocol("esm-sync", (request, callback) => {
-	let url = request.url.replace("esm-sync://", "");
+const logger = new Logger({ labels: [{ name: "Renderer Loader" }] });
 
-	if (!path.basename(url).includes(".")) url += ".js"; // TODO: handle directories and other file type loaders
-
-	let result = fs.readFileSync(
-		path.isAbsolute(url) ? url : path.join(__dirname, "..", url),
-		"utf-8"
-	);
-
-	if (!result) callback({ status: 404 });
-
-	// Transpile the result.
-	const transpiled = sync(result);
-	if (transpiled) {
-		result = transpiled;
+function resolve(url) {
+	if (path.isAbsolute(url)) {
+		url = require.resolve(url);
 	} else {
-		logger.error(
-			"Failed to transpile. Attempting to pass untranspiled result.",
-			e
-		);
+		url = require.resolve(path.join(__dirname, "..", url));
 	}
 
-	callback({
-		mimeType: "text/javascript",
-		data: Buffer.from(result, "utf-8"),
-	});
+	// TODO: Check for package.json and find the relative `module` path or use the `main` path as a backup.
+
+	return url;
+}
+
+protocol.registerBufferProtocol("import-sync", (request, callback) => {
+	let url = request.url.replace("import-sync://", "");
+
+	try {
+		url = resolve(url);
+
+		let result = fs.readFileSync(url, "utf-8");
+
+		if (!result) callback({ status: 404 });
+
+		// Transpile the result.
+		const transpiled = sync(result);
+		if (transpiled) {
+			result = transpiled;
+		} else {
+			logger.error(
+				`Failed to transpile "${url}". Attempting to pass untranspiled result.`
+			);
+		}
+
+		callback({
+			mimeType: "text/javascript",
+			data: Buffer.from(result, "utf-8"),
+		});
+	} catch (e) {
+		logger.error(e);
+		callback({ status: 404 });
+	}
 });
 
-protocol.registerBufferProtocol("esm", async (request, callback) => {
-	let url = request.url.replace("esm://", "");
+protocol.registerBufferProtocol("import", async (request, callback) => {
+	let url = request.url.replace("import://", "");
 
-	if (!path.basename(url).includes(".")) url += ".js"; // TODO: handle directories and other file type loaders
+	try {
+		url = resolve(url);
 
-	let result = await fs.promises
-		.readFile(
-			path.isAbsolute(url) ? url : path.join(__dirname, "..", url),
-			"utf-8"
-		)
-		.catch(() => callback({ status: 404 }));
+		let result = await fs.promises
+			.readFile(url, "utf-8")
+			.catch(() => callback({ status: 404 }));
 
-	// Transpile the result.
-	const transpiled = await async(result).catch(() => callback({ status: 404 }));
-	if (transpiled) {
-		result = transpiled;
-	} else {
-		logger.error(
-			"Failed to transpile. Attempting to pass untranspiled result.",
-			e
+		// Transpile the result.
+		const transpiled = await async(result).catch(() =>
+			callback({ status: 404 })
 		);
-	}
+		if (transpiled) {
+			result = transpiled;
+		} else {
+			logger.error(
+				`Failed to transpile "${url}". Attempting to pass untranspiled result.`
+			);
+		}
 
-	callback({
-		mimeType: "text/javascript",
-		data: Buffer.from(result, "utf-8"),
-	});
+		callback({
+			mimeType: "text/javascript",
+			data: Buffer.from(result, "utf-8"),
+		});
+	} catch (e) {
+		logger.error(e);
+		callback({ status: 404 });
+	}
 });
