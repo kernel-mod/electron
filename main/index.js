@@ -19,7 +19,7 @@ app.on("ready", () => {
 	require("./removeCSP");
 
 	// Add Renderer Loader
-	require("./rendererLoader");
+	require("../transpiler/rendererLoader");
 
 	// Start Discord.
 	require("./startDiscord");

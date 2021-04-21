@@ -1,21 +1,21 @@
-const utilities = require("../utilities");
+import * as utilities from '../utilities';
 
 const cc = { ...console };
 
-module.exports = class Logger {
-	static labels = [{ name: "Kernel" }];
+export class Logger {
+	labels = [{ name: "Kernel" }];
 	constructor({ labels = [] } = {}) {
-		this.labels = [...this.labels, labels];
+		this.labels = [...this.labels, ...labels];
 	}
 
-	static log(...args) {
+	log(...args) {
 		cc.log(
 			...this.createArguments({
 				args,
 			})
 		);
 	}
-	static warn(...args) {
+	warn(...args) {
 		cc.warn(
 			...this.createArguments({
 				backgroundColor: "#f5bd00",
@@ -23,7 +23,7 @@ module.exports = class Logger {
 			})
 		);
 	}
-	static error(...args) {
+	error(...args) {
 		return cc.error(
 			...this.createArguments({
 				backgroundColor: "#eb3941",
@@ -31,13 +31,13 @@ module.exports = class Logger {
 			})
 		);
 	}
-	// static log(...args) {
+	// log(...args) {
 	// 	cc.log(...this.createArguments(...args));
 	// }
-	// static log(...args) {
+	// log(...args) {
 	// 	cc.log(...this.createArguments(...args));
 	// }
-	static createArguments({
+	createArguments({
 		color = "#242424",
 		backgroundColor = "#DBDBDB",
 		args = [],
@@ -66,4 +66,4 @@ module.exports = class Logger {
 	}
 };
 
-if (!module) eval("export default module.exports;");
+export default new Logger();

@@ -1,2 +1,2 @@
-export { default as logger } from "kernel/logger";
-export { default as utilities } from "kernel/utilities";
+export { * as logger } from "kernel/logger";
+export { * as utilities } from "kernel/utilities";

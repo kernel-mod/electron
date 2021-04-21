@@ -1,19 +1,10 @@
 // Handles loading ESModules in the renderer process.
 
-import babel from "@babel/core";
 import { protocol } from "electron";
-import fs from "fs";
-import path from "path";
+import * as fs from "fs";
+import * as path from "path";
 import logger from "kernel/logger";
-import getModule from "../transpiler/getModule";
-
-const babelOptions = {
-	targets: {
-		electron: process.versions.electron,
-		esmodules: true,
-	},
-	plugins: [getModule("@babel/plugin-proposal-class-properties")],
-};
+import { default as async, sync } from './esmodules';
 
 // DO NOT USE A TRY CATCH YOU WILL REGRET IT
 protocol.registerBufferProtocol("esm-sync", (request, callback) => {
@@ -29,7 +20,7 @@ protocol.registerBufferProtocol("esm-sync", (request, callback) => {
 	if (!result) callback({ status: 404 });
 
 	// Transpile the result.
-	const transpiled = babel.transformSync(result, babelOptions).code;
+	const transpiled = sync(result);
 	if (transpiled) {
 		result = transpiled;
 	} else {
@@ -58,11 +49,7 @@ protocol.registerBufferProtocol("esm", async (request, callback) => {
 		.catch(() => callback({ status: 404 }));
 
 	// Transpile the result.
-	const transpiled = (
-		await babel
-			.transformAsync(result, babelOptions)
-			.catch(() => callback({ status: 404 }))
-	)?.code;
+	const transpiled = await async(result).catch(() => callback({ status: 404 }));
 	if (transpiled) {
 		result = transpiled;
 	} else {
