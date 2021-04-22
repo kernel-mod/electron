@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,7 +7,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Kernel Home</title>
+  <title>Kernel index.js</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -106,60 +108,62 @@
         <div class="core" id="main-content-wrapper">
             <div class="content">
                 <header class="page-title">
-                    <p></p>
-                    <h1>Home</h1>
+                    <p>Source</p>
+                    <h1>index.js</h1>
                 </header>
                 
 
 
 
     
-
-
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
     <section>
-        <article><h1>Kernel</h1>
-<ul>
-<li><a href="#kernel">Kernel</a>
-<ul>
-<li><a href="#app-resourcesapp-contents"><code>/app-*/resources/app/</code> Contents</a>
-<ul>
-<li><a href="#indexjs"><code>index.js</code></a></li>
-<li><a href="#packagejson"><code>package.json</code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h2><code>/app-*/resources/app/</code> Contents</h2>
-<h3><code>index.js</code></h3>
-<pre class="prettyprint source lang-js"><code>require(require(require(&quot;path&quot;).join(__dirname, &quot;package.json&quot;)).location);
-</code></pre>
-<h3><code>package.json</code></h3>
-<pre class="prettyprint source lang-json"><code>{
-	&quot;name&quot;: &quot;kernel&quot;,
-	&quot;main&quot;: &quot;index.js&quot;,
-	&quot;location&quot;: &quot;THE PATH TO YOUR KERNEL DISTRO&quot;
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @module utilities
+ */
+
+import * as electron from "electron";
+
+export /**
+ * A universal context function for identifying the context your code is running in.
+ * @returns {string("MAIN","PRELOAD","RENDERER")} The name of the current process.
+ */ function processLocation() {
+	if (!electron) {
+		return "RENDERER";
+	} else if (electron?.ipcMain) {
+		return "MAIN";
+	} else if (electron?.ipcRenderer) {
+		return "PRELOAD";
+	}
+	return "UNKNOWN";
 }
-</code></pre></article>
+
+export /**
+ * A function for the PRELOAD or RENDERER that injects a new separate module into the renderer.
+ * @param {object} options
+ * @param {string} options.path The path to the module.
+ * @param {boolean} [options.sync=false] Whether to run synchronously or asynchronously.
+ * @param {function} [options.onload=undefined] Code to run once the script has finished loading.
+ */ async function injectRendererModule({ path, sync = false, onload }) {
+	if (processLocation() === "MAIN") {
+		throw new Error("No.");
+	}
+
+	const script = Object.assign(document.createElement("script"), {
+		type: "module",
+		async: (!sync).toString(),
+		src: `import${sync ? "-sync" : ""}://${path}`,
+	});
+	if (onload) script.addEventListener("load", onload);
+	while (!document.documentElement) {
+		await new Promise((resolve) => setImmediate(resolve));
+	}
+	document.documentElement.appendChild(script);
+	script.remove();
+}
+</code></pre>
+        </article>
     </section>
-
-
 
 
 

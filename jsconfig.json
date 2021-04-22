@@ -1,0 +1,10 @@
+{
+	"compilerOptions": {
+		"baseUrl": ".",
+		"jsx": "react",
+		"paths": {
+			"kernel/*": ["core/*"]
+		}
+	},
+	"exclude": ["./docs", "./tutorials"]
+}
