@@ -1,5 +1,8 @@
 {
 	"main": "index.js",
+	"scripts": {
+		"build-docs": "jsdoc -c jsdoc.json"
+	},
 	"dependencies": {
 		"@babel/core": "^7.13.16",
 		"@babel/plugin-proposal-class-properties": "^7.13.0",
@@ -9,5 +12,11 @@
 		"babel-plugin-transform-commonjs": "^1.1.6",
 		"gsetw": "^1.0.1",
 		"pirates": "^4.0.1"
+	},
+	"devDependencies": {
+		"better-docs": "^2.3.2",
+		"braintree-jsdoc-template": "^3.3.0",
+		"jsdoc": "^3.6.6",
+		"jsdoc-template": "^1.2.0"
 	}
 }

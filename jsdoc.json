@@ -1,0 +1,38 @@
+{
+	"tags": {
+		"allowUnknownTags": ["component", "category", "subcategory"]
+	},
+	"source": {
+		"include": ["./core"],
+		"includePattern": ".js$",
+		"excludePattern": "(node_modules/|docs)"
+	},
+	"plugins": ["plugins/markdown", "node_modules/better-docs/category"],
+	"opts": {
+		"encoding": "utf8",
+		"destination": "./docs",
+		"readme": "README.md",
+		"recurse": true,
+		"verbose": false,
+		"tutorials": "./tutorials",
+		"template": "node_modules/better-docs"
+	},
+	"templates": {
+		"cleverLinks": true,
+		"monospaceLinks": false,
+		"search": true,
+		"better-docs": {
+			"name": "Kernel Documentation",
+			// "logo": "images/logo.png",
+			// "css": "jsdoc.css",
+			"title": "Kernel",
+			"hideGenerator": true,
+			"navLinks": [
+				{
+					"label": "GitHub",
+					"href": "https://github.com/kernel-mod/client"
+				}
+			]
+		}
+	}
+}
