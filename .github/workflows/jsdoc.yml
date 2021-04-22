@@ -27,8 +27,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: '15.x'
-#       - name: Install Dependencies
-#         run: npm install
+      - name: Install Dependencies
+        run: npm i -D
       - name: Build JSDoc
         uses: andstor/jsdoc-action@v1
         with:
