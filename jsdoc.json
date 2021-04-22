@@ -23,7 +23,6 @@
 		"search": true,
 		"better-docs": {
 			"name": "Kernel Documentation",
-			// "logo": "images/logo.png",
 			"css": "../jsdoc.css",
 			"title": "Kernel",
 			"hideGenerator": true,
