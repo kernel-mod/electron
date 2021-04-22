@@ -21,4 +21,4 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Dispatch to Website
-        run: curl -H "Authentication:${{ secrets.PAT }}" -H "Accept:application/vnd.github.everest-preview+json" -H "Content-Type:application/json" https://api.github.com/repos/kernel-mod/website/dispatches --data '{"event_type":"build"}'
+        run: curl -u "kernel-mod-bot:${{ secrets.PAT }}" -H "Accept:application/vnd.github.v3+json" -d "{\"event_type\":\"build\"}" https://api.github.com/repos/kernel-mod/website/dispatches
