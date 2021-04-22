@@ -20,5 +20,7 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      run: |
-      curl -XPOST -u "Authentication:${{ secrets.PAT_TOKEN }}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/kernel-mod/website/dispatches --data '{"event_type": "build_application"}'
+      - name: curl
+        uses: wei/curl@v1
+        with:
+          args: -H "Authentication:${{ secrets.PAT_TOKEN }}" -H "Accept:application/vnd.github.everest-preview+json" -H "Content-Type:application/json" https://api.github.com/repos/kernel-mod/website/dispatches --data '{"event_type":"build_application"}'
