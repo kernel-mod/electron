@@ -15,8 +15,6 @@
 	},
 	"devDependencies": {
 		"better-docs": "^2.3.2",
-		"braintree-jsdoc-template": "^3.3.0",
-		"jsdoc": "^3.6.6",
-		"jsdoc-template": "^1.2.0"
+		"jsdoc": "^3.6.6"
 	}
 }
