@@ -1,23 +1,29 @@
 // Handles loading ESModules in the renderer process.
+// https://github.com/nodejs/node/issues/31710
 
 import { protocol } from "electron";
 import * as fs from "fs";
 import * as path from "path";
+import * as URL from "url";
 import { Logger } from "kernel/logger";
 import { default as async, sync } from "./esm";
 
 const logger = new Logger({ labels: [{ name: "Renderer Loader" }] });
 
 function resolve(url) {
+	console.log(url);
+
 	if (path.isAbsolute(url)) {
 		url = require.resolve(url);
 	} else {
 		url = require.resolve(path.join(__dirname, "..", url));
 	}
 
+	// url = URL.pathToFileURL(url).href;
+
 	// TODO: Check for package.json and find the relative `module` path or use the `main` path as a backup.
 
-	return url;
+	return url.replace("file:///", "");
 }
 
 protocol.registerBufferProtocol("import-sync", (request, callback) => {
@@ -39,6 +45,8 @@ protocol.registerBufferProtocol("import-sync", (request, callback) => {
 				`Failed to transpile "${url}". Attempting to pass untranspiled result.`
 			);
 		}
+
+		console.log(result);
 
 		callback({
 			mimeType: "text/javascript",

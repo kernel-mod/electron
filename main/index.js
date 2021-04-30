@@ -1,4 +1,6 @@
 import logger from "kernel/logger";
+logger.time("Loaded in");
+
 import { app, protocol } from "electron";
 
 logger.log("Loading Kernel.");
@@ -12,8 +14,9 @@ protocol.registerSchemesAsPrivileged([
 ]);
 
 app.on("ready", () => {
-	console.time("Loading Time")
 	Promise.all([
+		// Set up heart.
+		import("kernel/heart/main"),
 		// Set up IPC.
 		import("./ipc"),
 		// Remove CSP.
@@ -21,8 +24,14 @@ app.on("ready", () => {
 		// Add Renderer Loader
 		import("../transpiler/rendererLoader"),
 	]).then(() => {
-		console.timeEnd("Loading Time")
+		logger.timeEnd("Loaded in");
+
 		// Start Discord.
 		require("./startDiscord");
+
+		// setTimeout(() => {
+		// 	const heart = require("kernel/heart/main");
+		// 	heart.beat({ vein: "TEST", data: "yoooo" });
+		// }, 5e3);
 	});
 });

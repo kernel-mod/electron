@@ -1,7 +1,7 @@
 // TODO: Pass global and renderer cores.
-import "./renderer/test";
-import gsetw from "./node_modules/gsetw";
-// import logger from "./core/logger";
+import "./test";
+import gsetw from "node/gsetw";
+// import logger from "kernel/logger";
 
 gsetw(window, "webpackJsonp").then((newWebpackJsonp) => {
 	const originalPush = { ...webpackJsonp }.push;

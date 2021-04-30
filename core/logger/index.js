@@ -1,4 +1,4 @@
-import * as utilities from '../utilities';
+import * as utilities from "kernel/utilities";
 
 const cc = { ...console };
 
@@ -31,12 +31,21 @@ export class Logger {
 			})
 		);
 	}
-	// log(...args) {
-	// 	cc.log(...this.createArguments(...args));
-	// }
-	// log(...args) {
-	// 	cc.log(...this.createArguments(...args));
-	// }
+	time(...args) {
+		return cc.time(
+			this.createArguments({
+				args,
+			}).join(" ")
+		);
+	}
+	timeEnd(...args) {
+		return cc.timeEnd(
+			this.createArguments({
+				args,
+			}).join(" ")
+		);
+	}
+
 	createArguments({
 		color = "#242424",
 		backgroundColor = "#DBDBDB",
@@ -64,6 +73,6 @@ export class Logger {
 
 		return newArgs;
 	}
-};
+}
 
 export default new Logger();

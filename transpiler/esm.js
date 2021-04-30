@@ -25,7 +25,8 @@ export const babelOptions = {
 			getModule("babel-plugin-module-resolver"),
 			{
 				alias: {
-					kernel: path.resolve(__dirname, "..", "core"),
+					kernel: "import://" + path.resolve(__dirname, "..", "core"),
+					node: "import://" + path.resolve(__dirname, "..", "node_modules"),
 				},
 			},
 		],
