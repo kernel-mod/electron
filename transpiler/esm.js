@@ -1,7 +1,7 @@
 import * as babel from "@babel/core";
 import * as path from "path";
 import getModule from "./getModule";
-import hashCacheBabel from "./hashCacheBabel";
+import hashCache from "./hashCache";
 
 export const babelOptions = {
 	targets: {
@@ -36,11 +36,11 @@ export const babelOptions = {
 };
 
 export default async function async(code) {
-	return hashCacheBabel.async(code, babel.transformAsync, code, babelOptions);
+	return hashCache.async(code, babel.transformAsync, code, babelOptions);
 }
 
 export { async };
 
 export function sync(code) {
-	return hashCacheBabel.sync(code, babel.transformSync, code, babelOptions);
+	return hashCache.sync(code, babel.transformSync, code, babelOptions);
 }

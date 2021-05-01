@@ -1,7 +1,7 @@
 const babel = require("@babel/core");
 const path = require("path");
 const getModule = require("./getModule");
-const hashCacheBabel = require("./hashCacheBabel");
+const hashCache = require("./hashCache");
 
 const targets = {
 	electron: process.versions.electron,
@@ -9,7 +9,7 @@ const targets = {
 };
 
 module.exports = (code) => {
-	return hashCacheBabel.sync(code, babel.transformSync, code, {
+	return hashCache.sync(code, babel.transformSync, code, {
 		targets,
 		presets: [
 			[
