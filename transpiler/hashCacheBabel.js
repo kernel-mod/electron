@@ -4,13 +4,9 @@ const path = require("path");
 
 function async(code, transpileFunction, ...transpileArgs) {
 	return new Promise(async (resolve) => {
-		const hashed = hasha(code);
+		const hash = hasha(code, { algorithm: "md5" });
 
-		const hashedFilePath = path.join(
-			__dirname,
-			"cache",
-			hashed.substring(0, 10)
-		);
+		const hashedFilePath = path.join(__dirname, "cache", hash);
 
 		if (fs.existsSync(hashedFilePath)) {
 			return resolve(await fs.readFile(hashedFilePath, "utf-8"));
@@ -26,9 +22,9 @@ function async(code, transpileFunction, ...transpileArgs) {
 }
 
 function sync(code, transpileFunction, ...transpileArgs) {
-	const hashed = hasha(code);
+	const hash = hasha(code, { algorithm: "md5" });
 
-	const hashedFilePath = path.join(__dirname, "cache", hashed.substring(0, 10));
+	const hashedFilePath = path.join(__dirname, "cache", hash);
 
 	if (fs.existsSync(hashedFilePath)) {
 		return fs.readFileSync(hashedFilePath, "utf-8");
