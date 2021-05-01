@@ -1,3 +1,7 @@
+transpiler/cache
+renderer/react*
+renderer/scheduler*
+
 # Logs
 logs
 *.log

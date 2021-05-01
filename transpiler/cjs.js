@@ -1,20 +1,21 @@
 const babel = require("@babel/core");
 const path = require("path");
 const getModule = require("./getModule");
+const hashCacheBabel = require("./hashCacheBabel");
 
 const targets = {
 	electron: process.versions.electron,
-	node: process.versions.node
+	node: process.versions.node,
 };
 
 module.exports = (code) => {
-	return babel.transformSync(code, {
+	return hashCacheBabel.sync(code, babel.transformSync, code, {
 		targets,
 		presets: [
 			[
 				getModule("@babel/preset-env"),
 				{
-					targets
+					targets,
 				},
 			],
 			getModule("@babel/preset-react"),
@@ -30,5 +31,5 @@ module.exports = (code) => {
 				},
 			],
 		],
-	}).code;
+	});
 };
