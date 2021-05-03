@@ -11,8 +11,6 @@ import { default as async, sync } from "./esm";
 const logger = new Logger({ labels: [{ name: "Renderer Loader" }] });
 
 function resolve(url) {
-	console.log(url);
-
 	if (path.isAbsolute(url)) {
 		url = require.resolve(url);
 	} else {
@@ -45,8 +43,6 @@ protocol.registerBufferProtocol("import-sync", (request, callback) => {
 				`Failed to transpile "${url}". Attempting to pass untranspiled result.`
 			);
 		}
-
-		console.log(result);
 
 		callback({
 			mimeType: "text/javascript",

@@ -33,8 +33,10 @@ function sync(code, transpileFunction, ...transpileArgs) {
 	}
 	const transpiledCode = transpileFunction(...transpileArgs).code;
 
-	fs.ensureFileSync(hashedFilePath);
-	fs.writeFileSync(hashedFilePath, transpiledCode, "utf-8");
+	// We want this to run and not block the returning of the transpiled code.
+	fs.ensureFile(hashedFilePath).then(() => {
+		fs.writeFile(hashedFilePath, transpiledCode, "utf-8");
+	});
 
 	return transpiledCode;
 }

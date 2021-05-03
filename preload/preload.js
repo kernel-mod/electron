@@ -5,12 +5,8 @@ import { ipcRenderer } from "electron";
 import * as heart from "kernel/heart/preload";
 
 heart.subscribe("TEST", (...data) => {
-	console.log(...data);
+	logger.log(...data);
 });
-
-logger.log("get preloaded on lmao");
-logger.warn("get preloaded on lmao");
-logger.error("get preloaded on lmao");
 
 ipcRenderer.sendSync("KERNEL_SETUP_RENDERER_HOOK");
 injectRendererModule({
