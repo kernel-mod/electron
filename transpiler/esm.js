@@ -1,4 +1,5 @@
 import * as babel from "@babel/core";
+import { resolvePath as _resolvePath } from 'babel-plugin-module-resolver';
 import * as path from "path";
 import getModule from "./getModule";
 import hashCache from "./hashCache";
@@ -25,8 +26,18 @@ export const babelOptions = {
 		[
 			getModule("babel-plugin-module-resolver"),
 			{
+				resolvePath(sourcePath, currentFile, opts) {
+					let resolved = _resolvePath(sourcePath, currentFile, opts)
+					if (!resolved && (sourcePath.startsWith(".") || sourcePath.startsWith("/"))) {
+						resolved = path.resolve(path.dirname(currentFile), sourcePath)
+					} else if (!resolved) {
+						resolved = sourcePath;
+					}
+					if (!currentFile) return "import://" + resolved
+					return "import://" + resolved + "?parent=" + encodeURIComponent(currentFile);
+				},
 				alias: {
-					kernel: "import://" + path.resolve(__dirname, "..", "core"),
+					"kernel": path.resolve(__dirname, "..", "core"),
 					// node: "import://" + path.resolve(__dirname, "..", "node_modules"), // this works, but only for node modules with no dependencies
 					// "*": "" // like this maybe??
 					// import fdh from "node/Buffer";
@@ -55,14 +66,14 @@ export const babelOptions = {
 	],
 };
 
-export default async function async(code) {
-	return hashCache.async(code, babel.transformAsync, code, babelOptions);
+export default async function async(code, parent) {
+	return hashCache.async(code, babel.transformAsync, code, {...babelOptions, filename: parent, cwd: path.dirname(parent)});
 }
 
 export { async };
 
-export function sync(code) {
-	return hashCache.sync(code, babel.transformSync, code, babelOptions);
+export function sync(code, parent) {
+	return hashCache.sync(code, babel.transformSync, code, {...babelOptions, filename: parent, cwd: path.dirname(parent)});
 }
 
 // this file does basically the same thing, but made for the renderer

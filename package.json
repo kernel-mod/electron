@@ -11,6 +11,7 @@
 		"babel-plugin-module-resolver": "^4.1.0",
 		"babel-plugin-transform-commonjs": "^1.1.6",
 		"css": "^3.0.0",
+		"find-node-modules": "^2.1.2",
 		"fs-extra": "^9.1.0",
 		"gsetw": "^1.0.1",
 		"hasha": "^5.2.2",

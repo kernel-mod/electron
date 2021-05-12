@@ -4,23 +4,21 @@
 import { protocol } from "electron";
 import * as fs from "fs";
 import * as path from "path";
-import * as URL from "url";
+import findNodeModules from "find-node-modules";
 import { Logger } from "kernel/logger";
 import { default as async, sync } from "./esm";
 
 const logger = new Logger({ labels: [{ name: "Renderer Loader" }] });
 
 function resolve(url) {
-	if (path.isAbsolute(url)) {
-		url = require.resolve(url);
-	} else {
-		url = require.resolve(path.join(__dirname, "..", url));
+	const modulePath = new URL(url, "import://").searchParams.get("parent");
+	let dir;
+	if (modulePath) {
+		url = url.split("?parent")[0];
+		dir = path.dirname(modulePath);
 	}
-
-	// url = URL.pathToFileURL(url).href;
-
-	// TODO: Check for package.json and find the relative `module` path or use the `main` path as a backup.
-
+	const requirePaths = [dir, ...(modulePath ? findNodeModules({ cwd: dir, relative: false }) : []), ...require.resolve.paths("")].filter(x=>x);
+	url = require.resolve(url, { paths: requirePaths })
 	return url.replace("file:///", "");
 }
 
@@ -30,12 +28,12 @@ protocol.registerBufferProtocol("import-sync", (request, callback) => {
 	try {
 		url = resolve(url);
 
-		let result = fs.readFileSync(url, "utf-8");
+		let result = fs.readFileSync(url.split("?parent")[0], "utf-8");
 
 		if (!result) callback({ status: 404 });
 
 		// Transpile the result.
-		const transpiled = sync(result);
+		const transpiled = sync(result, url);
 		if (transpiled) {
 			result = transpiled;
 		} else {
@@ -65,15 +63,13 @@ protocol.registerBufferProtocol("import", async (request, callback) => {
 			.catch(() => callback({ status: 404 }));
 
 		// Transpile the result.
-		const transpiled = await async(result).catch(() =>
-			callback({ status: 404 })
-		);
+		const transpiled = await async(result, url).catch((e) => {
+			logger.error(
+				`Failed to transpile "${url}". Attempting to pass untranspiled result.\nError: ${e}`
+			);
+		});
 		if (transpiled) {
 			result = transpiled;
-		} else {
-			logger.error(
-				`Failed to transpile "${url}". Attempting to pass untranspiled result.`
-			);
 		}
 
 		callback({
