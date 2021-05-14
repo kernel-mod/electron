@@ -1,7 +1,18 @@
 import logger from "kernel/logger";
+import { app, protocol } from "electron";
+import {
+	open as openInspector,
+	waitForDebugger as inspectorWaitForDebugger,
+} from "inspector";
+
 logger.time("Loaded in");
 
-import { app, protocol } from "electron";
+openInspector();
+if (app.commandLine.hasSwitch("kernel-inspect-wait")) {
+	logger.log("Waiting for debugger...");
+	inspectorWaitForDebugger();
+	logger.log("Connected to debugger.");
+}
 
 logger.log("Loading Kernel.");
 

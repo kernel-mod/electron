@@ -1,13 +1,22 @@
-const hasha = require("hasha");
+const crypto = require("crypto");
 const fs = require("fs-extra");
 const path = require("path");
+const { app } = require("electron");
 
 const cachePath = path.join(__dirname, "cache");
 
-const cache = true;
+const cache =
+	!app?.commandLine?.hasSwitch?.("kernel-no-cache") ??
+	!~process.argv.indexOf("--kernel-no-cache");
 
-async function async(code, transpileFunction, ...transpileArgs) {
-	const hash = hasha(code, { algorithm: "md5" });
+console.log(!~process.argv.indexOf("--kernel-no-cache"));
+
+if (!cache) {
+	clear();
+}
+
+async function async(code, transpileFunction) {
+	const hash = crypto.createHash("md5").update(code).digest("hex");
 
 	const hashedFilePath = path.join(cachePath, hash);
 
@@ -15,7 +24,7 @@ async function async(code, transpileFunction, ...transpileArgs) {
 		return await fs.readFile(hashedFilePath, "utf-8");
 	}
 
-	const transpiledCode = (await transpileFunction(...transpileArgs)).code;
+	const transpiledCode = await transpileFunction();
 
 	// We want this to run and not block the returning of the transpiled code.
 	if (cache) {
@@ -28,7 +37,7 @@ async function async(code, transpileFunction, ...transpileArgs) {
 }
 
 function sync(code, transpileFunction, ...transpileArgs) {
-	const hash = hasha(code, { algorithm: "md5" });
+	const hash = crypto.createHash("md5").update(code).digest("hex");
 
 	const hashedFilePath = path.join(cachePath, hash);
 

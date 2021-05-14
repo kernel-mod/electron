@@ -3,23 +3,13 @@
 
 import { protocol } from "electron";
 import * as fs from "fs";
-import * as path from "path";
-import findNodeModules from "find-node-modules";
 import { Logger } from "kernel/logger";
 import { default as async, sync } from "./esm";
 
 const logger = new Logger({ labels: [{ name: "Renderer Loader" }] });
 
 function resolve(url) {
-	const modulePath = new URL(url, "import://").searchParams.get("parent");
-	let dir;
-	if (modulePath) {
-		url = url.split("?parent")[0];
-		dir = path.dirname(modulePath);
-	}
-	const requirePaths = [dir, ...(modulePath ? findNodeModules({ cwd: dir, relative: false }) : []), ...require.resolve.paths("")].filter(x=>x);
-	url = require.resolve(url, { paths: requirePaths })
-	return url.replace("file:///", "");
+	return require.resolve(url).replace("file:///", "");
 }
 
 protocol.registerBufferProtocol("import-sync", (request, callback) => {
@@ -28,7 +18,7 @@ protocol.registerBufferProtocol("import-sync", (request, callback) => {
 	try {
 		url = resolve(url);
 
-		let result = fs.readFileSync(url.split("?parent")[0], "utf-8");
+		let result = fs.readFileSync(url, "utf-8");
 
 		if (!result) callback({ status: 404 });
 

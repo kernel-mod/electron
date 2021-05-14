@@ -1,6 +1,9 @@
+import { database } from ".";
+
 let storage = {
 	modules: {},
 	properties: {},
+	classProperties: {},
 };
 
 export function importModule(module, index) {
@@ -33,6 +36,23 @@ export function importModule(module, index) {
 					"Something has gona horribly wrong 2: Electric Boogaloo",
 					e
 				);
+			}
+		}
+
+		// Index them by their CSS class names.
+		const classProperties = Object.keys(module);
+		if (
+			classProperties.every(
+				(property) =>
+					typeof property === "string" &&
+					/[A-Za-z0-9]-[A-Za-z0-9_-]{6}-?$/i.test(property)
+			)
+		) {
+			for (const property of classProperties) {
+				if (!storage.classProperties[property]) {
+					storage.classProperties[property] = [];
+				}
+				storage.classProperties[property].push(index);
 			}
 		}
 	}

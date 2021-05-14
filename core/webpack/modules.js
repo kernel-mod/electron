@@ -1,5 +1,5 @@
-import { storage } from "kernel/webpack/database";
-import { getByProperties as getCommonModulesByProperties } from "kernel/webpack/commonModules";
+import { storage } from "./database";
+import { getByProperties as getCommonModulesByProperties } from "./commonModules";
 
 export /**
  * Wraps a filter to make it error safe.
@@ -17,6 +17,13 @@ export function getByFilter(filter) {
 		if (filter(module)) return module;
 	}
 	return null;
+}
+export function getAllByFilter(filter) {
+	let found = [];
+	for (const module of Object.values(storage.modules)) {
+		if (filter(module)) found.push(module);
+	}
+	return found;
 }
 
 export function getByDisplayName(displayName) {

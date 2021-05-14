@@ -1,20 +1,15 @@
 // TODO: Pass global and renderer cores.
 
-// import "./test";
-import gsetw from "gsetw";
-// import React from "./react.production.min.js";
-// import ReactDOM from "./react-dom.production.min.js";
-
+import "./test";
 import injector from "kernel/injector";
 import * as webpack from "kernel/webpack";
+
+import gsetw from "gsetw";
 
 import benchmark from "kernel/utilities/benchmark";
 import multiBenchmark from "kernel/utilities/multiBenchmark";
 
 window.kernel = { injector, webpack, benchmark, multiBenchmark };
-
-let replacedReact = false;
-let replacedReactDOM = false;
 
 // TODO: Figure out what `something`, `somethingElse`, and `someExport` are for.
 gsetw(window, "webpackJsonp").then((newWebpackJsonp) => {
@@ -32,54 +27,10 @@ gsetw(window, "webpackJsonp").then((newWebpackJsonp) => {
 				modules[key] = (moduleData, someExport, webpackRequire) => {
 					modules[key] = originalModule;
 
-					if (someExport.setLogFn) {
-						Object.defineProperty(someExport, "__esModule", {
-							value: !0,
-						});
-						someExport.setLogFn = () => {};
-						someExport.default = class {
-							log(...args) {
-								console.debug(...args);
-							}
-							info(...args) {
-								console.debug(...args);
-							}
-							warn(...args) {
-								console.debug(...args);
-							}
-							error(...args) {
-								console.debug(...args);
-							}
-							trace(...args) {
-								console.debug(...args);
-							}
-							verbose(...args) {
-								console.debug(...args);
-							}
-							name = "";
-						};
-					} else {
-						originalModule(moduleData, someExport, webpackRequire);
-						// if (
-						// 	!replacedReact &&
-						// 	moduleData.exports?.createElement &&
-						// 	moduleData.exports?.PureComponent
-						// ) {
-						// 	replacedReact = true;
-						// 	moduleData.exports = React;
-						// } else if (
-						// 	!replacedReactDOM &&
-						// 	moduleData.exports?.render &&
-						// 	moduleData.exports?.createPortal
-						// ) {
-						// 	replacedReactDOM = true;
-						// 	ReactDOM.render = (target, element) =>
-						// 		ReactDOM.unstable_createRoot(element).render(target);
-						// 	moduleData.exports = ReactDOM;
-						// }
+					originalModule(moduleData, someExport, webpackRequire);
 
-					}
 					window?.DiscordNative?.window?.setDevtoolsCallbacks?.(null, null);
+
 					webpack.database.importModule(moduleData.exports, moduleData.i);
 				};
 			}
