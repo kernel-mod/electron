@@ -9,8 +9,6 @@ const cache =
 	!app?.commandLine?.hasSwitch?.("kernel-no-cache") ??
 	!~process.argv.indexOf("--kernel-no-cache");
 
-console.log(!~process.argv.indexOf("--kernel-no-cache"));
-
 if (!cache) {
 	clear();
 }

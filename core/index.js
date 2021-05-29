@@ -1,3 +1,3 @@
-export * as logger from "kernel/logger";
-export * as utilities from "kernel/utilities";
-export * as webpack from "kernel/webpack";
+export * as logger from "./logger";
+export * as utilities from "./utilities";
+export * as webpack from "./webpack";
