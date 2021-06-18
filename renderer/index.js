@@ -9,6 +9,12 @@ import gsetw from "gsetw";
 import benchmark from "kernel/utilities/benchmark";
 import multiBenchmark from "kernel/utilities/multiBenchmark";
 
+import React from "./react.production.min.js";
+import ReactDOM from "./react-dom.profiling.min.js";
+
+window.React = React;
+window.ReactDOM = ReactDOM;
+
 window.kernel = { injector, webpack, benchmark, multiBenchmark };
 
 // TODO: Figure out what `something`, `somethingElse`, and `someExport` are for.
@@ -28,6 +34,20 @@ gsetw(window, "webpackJsonp").then((newWebpackJsonp) => {
 					modules[key] = originalModule;
 
 					originalModule(moduleData, someExport, webpackRequire);
+
+					if (
+						moduleData.exports?.createElement &&
+						moduleData.exports?.PureComponent
+					) {
+						moduleData.exports = React;
+					} else if (
+						moduleData.exports?.render &&
+						moduleData.exports?.createPortal
+					) {
+						// ReactDOM.render = (target, element) =>
+						// 	ReactDOM.createRoot(element).render(target);
+						moduleData.exports = ReactDOM;
+					}
 
 					window?.DiscordNative?.window?.setDevtoolsCallbacks?.(null, null);
 

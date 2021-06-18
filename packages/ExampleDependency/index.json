@@ -1,6 +1,5 @@
 {
 	"name": "Example Dependency",
 	"id": "ExampleDependency",
-	"version": "1.0.0",
-	"dependencies": ["ExamplePackage2"]
+	"version": "1.0.0"
 }

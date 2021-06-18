@@ -1,9 +1,13 @@
 import logger from "kernel/logger";
 import { app, protocol } from "electron";
+import path from "path";
 import {
 	open as openInspector,
 	waitForDebugger as inspectorWaitForDebugger,
 } from "inspector";
+import installExtension, {
+	REACT_DEVELOPER_TOOLS,
+} from "electron-devtools-installer";
 
 logger.time("Loaded in");
 
@@ -27,6 +31,13 @@ protocol.registerSchemesAsPrivileged([
 ]);
 
 app.on("ready", () => {
+	installExtension(REACT_DEVELOPER_TOOLS, {
+		loadExtensionOptions: { allowFileAccess: true },
+		forceDownload: true,
+	})
+		.then((name) => logger.log(`Added Extension: ${name}`))
+		.catch((err) => logger.log("An error occurred:", err));
+
 	Promise.all([
 		// Set up heart.
 		import("kernel/heart/main"),

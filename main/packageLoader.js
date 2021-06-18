@@ -3,6 +3,7 @@ import flipTree from "kernel/utilities/flipTree";
 import fs from "fs-extra";
 import path from "path";
 import chokidar from "chokidar";
+import _ from "lodash";
 
 const packagesFolder = path.join(__dirname, "..", "packages");
 
@@ -37,25 +38,27 @@ export function getPackages() {
 		);
 }
 
-function invert(object) {
-	var result = {};
-
-	function setValue(target, path, value) {
-		var last = path.pop();
-		path.reduce((o, k) => (o[k] = o[k] || {}), target)[last] = value;
-	}
-
-	function iter(o, p) {
-		if (o && typeof o === "object") {
-			Object.keys(o).forEach((k) => iter(o[k], [...p, k]));
-			return;
+function walk(node, callback) {
+	if (typeof node === "object") {
+		for (const child of Object.values(node)) {
+			if (typeof child === "object") {
+				walk(child, callback);
+			}
 		}
-		p.unshift(p.pop());
-		setValue(result, p, o);
 	}
+	callback(node);
+}
 
-	iter(object, []);
-	return result;
+function treeDepth(object) {
+	if (typeof object !== "object") return 0;
+	let depth = 1;
+	for (const child of Object.values(object)) {
+		if (typeof child === "object") {
+			const childDepth = treeDepth(child) + 1;
+			depth = Math.max(childDepth, depth);
+		}
+	}
+	return depth;
 }
 
 /**
@@ -103,9 +106,25 @@ export /**
 	}
 
 	if (first) {
-		const ogre = [];
-		tree = flipTree(tree);
-		return tree;
+		let ogre = [];
+
+		walk(tree, (node) => {
+			for (const [key, value] of Object.entries(node)) {
+				const depth = treeDepth(value);
+				if (!ogre[depth]) ogre[depth] = [key];
+				else ogre[depth].push(key);
+			}
+		});
+
+		const found = new Set();
+		for (let i = 0; i < ogre.length; i++) {
+			ogre[i] = [...new Set(ogre[i].filter((id) => !found.has(id)))];
+			for (const id of ogre[i]) {
+				found.add(id);
+			}
+		}
+
+		return ogre;
 	}
 	return tree;
 }
@@ -116,10 +135,8 @@ logger.time("Retrieved packages in");
 
 const packages = getPackages();
 
-getOgre(packages);
-
-logger.timeEnd("Retrieved packages in");
-
 watcher.on("change", (path, stats) => {});
 
 logger.log(getOgre(packages));
+
+logger.timeEnd("Retrieved packages in");
