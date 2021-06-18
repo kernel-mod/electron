@@ -1,5 +1,4 @@
 import logger from "kernel/logger";
-import flipTree from "kernel/utilities/flipTree";
 import fs from "fs-extra";
 import path from "path";
 import chokidar from "chokidar";
