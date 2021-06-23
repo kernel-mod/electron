@@ -1,6 +1,5 @@
 import logger from "kernel/logger";
 import { app, protocol } from "electron";
-import path from "path";
 import {
 	open as openInspector,
 	waitForDebugger as inspectorWaitForDebugger,

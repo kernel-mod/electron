@@ -2,15 +2,17 @@ const babel = require("@babel/core");
 const path = require("path");
 const getModule = require("./getModule");
 const hashCache = require("./hashCache");
+const sourceMapsOptions = require("./sourceMapsOptions");
 
 const targets = {
 	electron: process.versions.electron,
 	node: process.versions.node,
 };
 
-module.exports = (code) => {
-	return hashCache.sync(code, babel.transformSync, code, {
+function generateBabelOptions(currentFile) {
+	return {
 		targets,
+		...sourceMapsOptions(currentFile),
 		presets: [
 			[
 				getModule("@babel/preset-env"),
@@ -31,5 +33,13 @@ module.exports = (code) => {
 				},
 			],
 		],
+	};
+}
+
+function sync(code, url) {
+	return hashCache.sync(code, () => {
+		return babel.transformSync(code, generateBabelOptions(url)).code;
 	});
-};
+}
+
+module.exports = { generateBabelOptions, sync };

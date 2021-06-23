@@ -3,6 +3,7 @@ import { resolvePath as _resolvePath } from "babel-plugin-module-resolver";
 import * as path from "path";
 import getModule from "./getModule";
 import hashCache from "./hashCache";
+import sourceMapsOptions from "./sourceMapsOptions";
 
 export function generateBabelOptions(currentFile) {
 	return {
@@ -10,6 +11,7 @@ export function generateBabelOptions(currentFile) {
 			electron: process.versions.electron,
 			esmodules: true,
 		},
+		...sourceMapsOptions(currentFile),
 		presets: [
 			[
 				getModule("@babel/preset-env"),

@@ -4,7 +4,7 @@
 import { protocol } from "electron";
 import * as fs from "fs";
 import { Logger } from "kernel/logger";
-import { default as async, sync } from "./esm";
+import { async, sync } from "./esm";
 
 const logger = new Logger({ labels: [{ name: "Renderer Loader" }] });
 

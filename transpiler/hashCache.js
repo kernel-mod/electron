@@ -5,11 +5,11 @@ const { app } = require("electron");
 
 const cachePath = path.join(__dirname, "cache");
 
-const cache =
+const cache = () =>
 	!app?.commandLine?.hasSwitch?.("kernel-no-cache") ??
 	!~process.argv.indexOf("--kernel-no-cache");
 
-if (!cache) {
+if (!cache()) {
 	clear();
 }
 
@@ -18,14 +18,14 @@ async function async(code, transpileFunction) {
 
 	const hashedFilePath = path.join(cachePath, hash);
 
-	if (cache && fs.existsSync(hashedFilePath)) {
+	if (cache() && fs.existsSync(hashedFilePath)) {
 		return await fs.readFile(hashedFilePath, "utf-8");
 	}
 
 	const transpiledCode = await transpileFunction();
 
 	// We want this to run and not block the returning of the transpiled code.
-	if (cache) {
+	if (cache()) {
 		fs.ensureFile(hashedFilePath).then(() => {
 			fs.writeFile(hashedFilePath, transpiledCode, "utf-8");
 		});
@@ -34,18 +34,18 @@ async function async(code, transpileFunction) {
 	return transpiledCode;
 }
 
-function sync(code, transpileFunction, ...transpileArgs) {
+function sync(code, transpileFunction) {
 	const hash = crypto.createHash("md5").update(code).digest("hex");
 
 	const hashedFilePath = path.join(cachePath, hash);
 
-	if (cache && fs.existsSync(hashedFilePath)) {
+	if (cache() && fs.existsSync(hashedFilePath)) {
 		return fs.readFileSync(hashedFilePath, "utf-8");
 	}
-	const transpiledCode = transpileFunction(...transpileArgs).code;
+	const transpiledCode = transpileFunction();
 
 	// We want this to run and not block the returning of the transpiled code.
-	if (cache) {
+	if (cache()) {
 		fs.ensureFile(hashedFilePath).then(() => {
 			fs.writeFile(hashedFilePath, transpiledCode, "utf-8");
 		});
