@@ -63,4 +63,4 @@ gsetw(window, "webpackJsonp").then((newWebpackJsonp) => {
 	};
 });
 
-console.log("Found ReactDOM.");
+console.log("Source maps log.");
