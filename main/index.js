@@ -22,7 +22,7 @@ logger.log("Loading Kernel.");
 require("./packageLoader");
 
 // Replace Electron's BrowserWindow with our own.
-require("./injectBrowserWindow");
+require("./patchBrowserWindow");
 
 protocol.registerSchemesAsPrivileged([
 	{ scheme: "import", privileges: { bypassCSP: true } },
