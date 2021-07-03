@@ -41,5 +41,10 @@ function sync(code, url) {
 		return babel.transformSync(code, generateBabelOptions(url)).code;
 	});
 }
+async function async(code, url) {
+	return hashCache.async(code, async () => {
+		return (await babel.transformAsync(code, generateBabelOptions(url))).code;
+	});
+}
 
-module.exports = { generateBabelOptions, sync };
+module.exports = { generateBabelOptions, sync, async };

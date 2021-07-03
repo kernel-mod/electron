@@ -1,4 +1,4 @@
-transpiler/cache
+transpiler/cache.br
 renderer/react*
 renderer/scheduler*
 
