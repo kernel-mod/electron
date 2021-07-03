@@ -57,5 +57,5 @@ export async function injectRendererModule({ path, sync = false, onload }) {
 		await new Promise((resolve) => setImmediate(resolve));
 	}
 	document.documentElement.appendChild(script);
-	// script.remove();
+	script.remove();
 }

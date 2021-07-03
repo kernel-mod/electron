@@ -19,15 +19,16 @@ if (app.commandLine.hasSwitch("kernel-inspect-wait")) {
 
 logger.log("Loading Kernel.");
 
-require("./packageLoader");
-
-// Replace Electron's BrowserWindow with our own.
-require("./patchBrowserWindow");
-
 protocol.registerSchemesAsPrivileged([
 	{ scheme: "import", privileges: { bypassCSP: true } },
 	{ scheme: "import-sync", privileges: { bypassCSP: true } },
 ]);
+
+// TODO: Load main packages here.
+require("./packageLoader");
+
+// Replace Electron's BrowserWindow with our own.
+require("./patchBrowserWindow");
 
 app.on("ready", () => {
 	installExtension(REACT_DEVELOPER_TOOLS, {

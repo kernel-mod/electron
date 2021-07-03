@@ -4,11 +4,16 @@ import { ipcRenderer } from "electron";
 
 import * as heart from "kernel/heart/preload";
 
+// TODO: Load the preload packages here.
+
 heart.subscribe("TEST", (...data) => {
 	logger.log(...data);
 });
 
 ipcRenderer.sendSync("KERNEL_SETUP_RENDERER_HOOK");
+
+// TODO: Load renderer packages here.
+
 injectRendererModule({
 	path: "./renderer",
 	onload: () => ipcRenderer.sendSync("KERNEL_FINISH_RENDERER_HOOK"),
