@@ -18,15 +18,16 @@ export function getPackages() {
 		.readdirSync(packagesFolder, { withFileTypes: true })
 		.filter((dirent) => dirent.isDirectory())
 		.map((dirent) => dirent.name)
-		.map((packageName) => {
+		.map((packageFolderName) => {
 			let packageJSON;
 			try {
 				packageJSON = fs.readJSONSync(
-					path.join(packagesFolder, packageName, "index.json")
+					path.join(packagesFolder, packageFolderName, "index.json")
 				);
 			} catch {
 				logger.error(`Package has no index.json.`);
 			}
+			packageJSON.folder = packageFolderName;
 			return packageJSON;
 		})
 		.reduce(
@@ -128,14 +129,37 @@ export /**
 	return tree;
 }
 
-export function load(dir) {}
+export async function load(ogre, packages) {
+	// console.log(ogre, packages);
+	// Load sync.
+	for (const layer of ogre) {
+		// Load the packages all at once.
+		await Promise.all(
+			layer.map((packageName) => {
+				return new Promise(async (resolve, reject) => {
+					try {
+						let packageClass = await import(
+							path.join(packagesFolder, packages[packageName].folder, "main.js")
+						);
+						packageClass = new (packageClass.default ?? packageClass)();
+						packageClass.start();
+						resolve();
+					} catch (err) {
+						reject();
+					}
+				});
+			})
+		);
+	}
+}
 
 logger.time("Retrieved packages in");
 
 const packages = getPackages();
+const ogre = getOgre(packages);
 
 watcher.on("change", (path, stats) => {});
 
-logger.log(getOgre(packages));
+load(ogre, packages);
 
 logger.timeEnd("Retrieved packages in");

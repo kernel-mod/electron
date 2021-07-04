@@ -2,10 +2,10 @@ import logger from "kernel/logger";
 
 export default class ExamplePlugin {
 	start() {
-		logger.log("ExamplePlugin started.");
+		logger.log("ExamplePlugin2 started.");
 	}
 
 	stop() {
-		logger.log("ExamplePlugin stopped.");
+		logger.log("ExamplePlugin2 stopped.");
 	}
 }

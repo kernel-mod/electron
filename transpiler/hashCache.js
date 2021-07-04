@@ -4,6 +4,7 @@ const path = require("path");
 const { app } = require("electron");
 const zlib = require("zlib");
 const { promisify } = require("util");
+const { debounce } = require("lodash");
 
 const promisifiedBrotliCompress = promisify(zlib.brotliCompress);
 const promisifiedBrotliDecompress = promisify(zlib.brotliDecompress);
@@ -74,12 +75,14 @@ async function clear() {
 	return await fs.unlink(cachePath);
 }
 
-async function save() {
+async function _save() {
 	return await fs.writeFile(
 		cachePath,
 		await promisifiedBrotliCompress(JSON.stringify(cacheData))
 	);
 }
+
+const save = debounce(_save, 100);
 
 async function load() {
 	try {
