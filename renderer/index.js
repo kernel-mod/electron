@@ -9,8 +9,8 @@ import gsetw from "gsetw";
 import benchmark from "kernel/utilities/benchmark";
 import multiBenchmark from "kernel/utilities/multiBenchmark";
 
-import React from "./react.production.min.js";
-import ReactDOM from "./react-dom.profiling.min.js";
+import React from "./react.production.min";
+import ReactDOM from "./react-dom.profiling.min";
 
 window.React = React;
 window.ReactDOM = ReactDOM;

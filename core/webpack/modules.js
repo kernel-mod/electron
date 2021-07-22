@@ -26,6 +26,37 @@ export function getAllByFilter(filter) {
 	return found;
 }
 
+export function getAllByStringExpression(expression) {
+	const found = [];
+	for (const [string, moduleIndex] of Object.entries(storage.stringified)) {
+		if (wrapFilter(expression)(string)) found.push(getByIndex(moduleIndex));
+	}
+	return found;
+}
+export function getAllByStrings(...strings) {
+	return getAllByStringExpression((string) =>
+		strings.every((searchString) => ~string.indexOf(searchString))
+	);
+}
+export function getAllByString(string) {
+	return getAllByStrings(string);
+}
+
+export function getByStringExpression(expression) {
+	for (const [string, moduleIndex] of Object.entries(storage.stringified)) {
+		if (wrapFilter(expression)(string)) return getByIndex(moduleIndex);
+	}
+	return null;
+}
+export function getByStrings(...strings) {
+	return getByStringExpression((string) =>
+		strings.every((searchString) => ~string.indexOf(searchString))
+	);
+}
+export function getByString(string) {
+	return getByStrings(string);
+}
+
 export function getByDisplayName(displayName) {
 	for (const reactComponent of storage.reactComponents) {
 		if (reactComponent.displayName === displayName) return reactComponent;

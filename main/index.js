@@ -25,7 +25,7 @@ protocol.registerSchemesAsPrivileged([
 ]);
 
 // TODO: Load main packages here.
-require("./packageLoader");
+require("../packageLoader");
 
 // Replace Electron's BrowserWindow with our own.
 require("./patchBrowserWindow");

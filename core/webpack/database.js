@@ -4,6 +4,7 @@ let storage = {
 	modules: {},
 	properties: {},
 	classProperties: {},
+	stringified: {},
 };
 
 export function importModule(module, index) {
@@ -55,6 +56,34 @@ export function importModule(module, index) {
 				storage.classProperties[property].push(index);
 			}
 		}
+
+		// Index them by their stringified versions.
+		function stringPush(moduleValue) {
+			function stringIt(it) {
+				if (it) {
+					try {
+						return it.toString([]);
+					} catch (e) {
+						return it.toString();
+					}
+				}
+			}
+			const string = stringIt(moduleValue);
+			if (!storage.stringified[string]) {
+				storage.stringified[string] = [];
+			}
+			storage.stringified[string].push(index);
+		}
+		if (typeof module === "function") {
+			stringPush(module);
+		}
+		if (module.__esModule && module.default) {
+			if (typeof module.default === "function") stringPush(module.default);
+			if (typeof module.default.type === "function")
+				stringPush(module.default.type);
+		}
+
+		return true;
 	}
 }
 
