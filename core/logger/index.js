@@ -4,8 +4,16 @@ const cc = { ...console };
 
 export class Logger {
 	labels = [{ name: "Kernel" }];
-	constructor({ labels = [] } = {}) {
-		this.labels = [...this.labels, ...labels];
+	constructor(options) {
+		try {
+			if (typeof options === "string") {
+				this.labels = [...this.labels, { name: options }];
+			} else if (typeof options === "object") {
+				this.labels = [...this.labels, ...options.labels];
+			}
+		} catch (e) {
+			console.error("Failed to create logger:", e);
+		}
 	}
 
 	log(...args) {

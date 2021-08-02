@@ -1,6 +1,9 @@
 transpiler/cache.br
 renderer/react*
 renderer/scheduler*
+packages/*/pnpm-lock.yaml
+packages/*/yarn.lock
+packages/*/package-lock.json
 
 # Logs
 logs

@@ -1,6 +1,0 @@
-{
-	"name": "Example Package",
-	"id": "ExamplePackage",
-	"version": "1.0.0",
-	"dependencies": ["ExampleDependency"]
-}

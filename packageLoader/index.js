@@ -1,8 +1,12 @@
-import logger from "kernel/logger";
+// TODO: Maybe move this and the transpiler to kernel/core?
+
+import logger, { Logger } from "kernel/logger";
 import fs from "fs-extra";
 import path from "path";
 import chokidar from "chokidar";
 import _ from "lodash";
+import EventEmitter from "events";
+import { ipcMain } from "electron";
 
 const packagesFolder = path.join(__dirname, "..", "packages");
 
@@ -13,29 +17,27 @@ const watcher = chokidar.watch("all", {
 });
 
 export function getPackages() {
-	// Yeeeeaaaaah, gonna see if I can make this faster later.
 	return fs
 		.readdirSync(packagesFolder, { withFileTypes: true })
-		.filter((dirent) => dirent.isDirectory())
-		.map((dirent) => dirent.name)
-		.map((packageFolderName) => {
-			let packageJSON;
+		.reduce((packages, dirent) => {
+			if (!dirent.isDirectory()) return packages;
+			let packageJSON = {};
+
 			try {
 				packageJSON = fs.readJSONSync(
-					path.join(packagesFolder, packageFolderName, "index.json")
+					path.join(packagesFolder, dirent.name, "index.json")
 				);
-			} catch {
-				logger.error(`Package has no index.json.`);
+			} catch (err) {
+				return void logger.error(
+					`Package ${packageFolderName} could not be loaded!`,
+					err
+				);
 			}
-			packageJSON.folder = packageFolderName;
-			return packageJSON;
-		})
-		.reduce(
-			(packages, pack) => (
-				(packages[pack.id] = (() => (delete pack.id, pack))()), packages
-			),
-			{}
-		);
+
+			packageJSON.folder = dirent.name;
+			packages[packageJSON.id] = (delete packageJSON.id, packageJSON);
+			return packages;
+		}, {});
 }
 
 function walk(node, callback) {
@@ -129,37 +131,58 @@ export /**
 	return tree;
 }
 
+export const events = new EventEmitter();
+export const loadedPackages = {};
+
+// TODO: Move this to its own file.
 export async function load(ogre, packages) {
-	// console.log(ogre, packages);
 	// Load sync.
 	for (const layer of ogre) {
 		// Load the packages all at once.
 		await Promise.all(
-			layer.map((packageName) => {
-				return new Promise(async (resolve, reject) => {
-					try {
-						let packageClass = await import(
-							path.join(packagesFolder, packages[packageName].folder, "main.js")
-						);
-						packageClass = new (packageClass.default ?? packageClass)();
-						packageClass.start();
-						resolve();
-					} catch (err) {
-						reject();
-					}
-				});
+			layer.map(async (packageName) => {
+				try {
+					const packagePath = path.join(
+						packagesFolder,
+						packages[packageName].folder,
+						"main.js"
+					);
+					if (!fs.existsSync(packagePath)) return;
+
+					let packageClass = await import(packagePath);
+					packageClass = packageClass.default ?? packageClass;
+					events.emit("PACKAGE_LOAD", {
+						package: packages[packageName],
+						class: packageClass,
+					});
+					packageClass.prototype.logger = new Logger(
+						packages[packageName].name ?? packageName
+					);
+					packageClass = new packageClass();
+
+					events.emit("PACKAGE_START", {
+						package: packages[packageName],
+						class: packageClass,
+					});
+					await packageClass.start();
+					return void (loadedPackages[packageName] = packageClass);
+				} catch (err) {
+					return void logger.error(`Failed to load ${packageName}:`, err);
+				}
 			})
 		);
 	}
 }
 
-logger.time("Retrieved packages in");
-
-const packages = getPackages();
-const ogre = getOgre(packages);
-
-watcher.on("change", (path, stats) => {});
-
-load(ogre, packages);
-
-logger.timeEnd("Retrieved packages in");
+ipcMain.on("KERNEL_GET_PACKAGES_FOLDER", (event, arg) => {
+	event.returnValue = packagesFolder;
+});
+ipcMain.on("KERNEL_GET_PACKAGES", (event, arg) => {
+	event.returnValue = getPackages();
+});
+ipcMain.on("KERNEL_GET_OGRE", (event, packages) => {
+	if (packages) {
+		return void (event.returnValue = getOgre(packages));
+	}
+	event.returnValue = getOgre();
+});

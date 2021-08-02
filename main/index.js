@@ -1,21 +1,8 @@
 import logger from "kernel/logger";
-import { app, protocol } from "electron";
-import {
-	open as openInspector,
-	waitForDebugger as inspectorWaitForDebugger,
-} from "inspector";
-import installExtension, {
-	REACT_DEVELOPER_TOOLS,
-} from "electron-devtools-installer";
+import { app, protocol, ipcRenderer } from "electron";
+import * as heart from "kernel/heart/main";
 
 logger.time("Loaded in");
-
-openInspector();
-if (app.commandLine.hasSwitch("kernel-inspect-wait")) {
-	logger.log("Waiting for debugger...");
-	inspectorWaitForDebugger();
-	logger.log("Connected to debugger.");
-}
 
 logger.log("Loading Kernel.");
 
@@ -24,38 +11,42 @@ protocol.registerSchemesAsPrivileged([
 	{ scheme: "import-sync", privileges: { bypassCSP: true } },
 ]);
 
-// TODO: Load main packages here.
-require("../packageLoader");
+// Async to do async package stuff before loading client.
+// Don't worry packages load faster than straight async, most can load bulk in sync.
+(async () => {
+	// Load main packages.
+	const packageLoader = await import("../packageLoader");
 
-// Replace Electron's BrowserWindow with our own.
-require("./patchBrowserWindow");
+	if (!app.commandLine.hasSwitch("kernel-safe-mode")) {
+		logger.time("Retrieved packages in");
+		const packages = packageLoader.getPackages();
+		const ogre = packageLoader.getOgre(packages, packages);
+		logger.timeEnd("Retrieved packages in");
+		logger.time("Loaded packages in");
+		await packageLoader.load(ogre, packages);
+		logger.timeEnd("Loaded packages in");
+	} else {
+		logger.log("Running in safe mode. All packages are initially disabled.");
+	}
 
-app.on("ready", () => {
-	installExtension(REACT_DEVELOPER_TOOLS, {
-		loadExtensionOptions: { allowFileAccess: true },
-		forceDownload: true,
-	})
-		.then((name) => logger.log(`Added Extension: ${name}`))
-		.catch((err) => logger.log("An error occurred:", err));
+	// Replace Electron's BrowserWindow with our own.
+	await import("./patchBrowserWindow");
 
-	Promise.all([
-		// Set up heart.
-		import("kernel/heart/main"),
-		// Set up IPC.
-		import("./ipc"),
-		// Remove CSP.
-		import("./removeCSP"),
-		// Add Renderer Loader
-		import("../transpiler/rendererLoader"),
-	]).then(() => {
-		logger.timeEnd("Loaded in");
+	app.on("ready", () => {
+		Promise.all([
+			// Set up heart.
+			import("kernel/heart/main"),
+			// Set up IPC.
+			import("./ipc"),
+			// Remove CSP.
+			import("./removeCSP"),
+			// Add Renderer Loader
+			import("../transpiler/rendererLoader"),
+		]).then(async () => {
+			logger.timeEnd("Loaded in");
 
-		// Start Discord.
-		require("./startDiscord");
-
-		// setTimeout(() => {
-		// 	const heart = require("kernel/heart/main");
-		// 	heart.beat({ vein: "TEST", data: "yoooo" });
-		// }, 5e3);
+			// Start Discord.
+			await import("./startDiscord");
+		});
 	});
-});
+})();

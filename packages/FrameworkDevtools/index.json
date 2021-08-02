@@ -1,0 +1,7 @@
+{
+	"name": "Framework Devtools",
+	"id": "FrameworkDevtools",
+	"options": {
+		"devtools": ["REACT_DEVELOPER_TOOLS"]
+	}
+}
