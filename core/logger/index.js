@@ -1,4 +1,4 @@
-import * as utilities from "kernel/utilities";
+import * as utilities from "#kernel/utilities";
 
 const cc = { ...console };
 

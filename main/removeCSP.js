@@ -1,5 +1,5 @@
-import logger from "kernel/logger";
-import { session } from "electron";
+import logger from "#kernel/logger";
+const { session } = require("electron");
 
 logger.log("Removing CSP.");
 

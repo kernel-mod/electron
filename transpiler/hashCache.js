@@ -10,8 +10,8 @@ const promisifiedBrotliCompress = promisify(zlib.brotliCompress);
 const promisifiedBrotliDecompress = promisify(zlib.brotliDecompress);
 
 let cacheData = {};
-const cachePath = path.join(__dirname, "cache.br");
-loadSync();
+const cachePath = path.join(path.basename(import.meta.url), "cache.br");
+// loadSync();
 
 const cache = () =>
 	!app?.commandLine?.hasSwitch?.("kernel-no-cache") ??
@@ -25,7 +25,7 @@ function daysFromNow(days) {
 	return new Date(new Date().getTime() + days * 24 * 60 * 60 * 1000).getTime();
 }
 
-async function async(code, transpileFunction) {
+export async function async(code, transpileFunction) {
 	const hash = crypto.createHash("md5").update(code).digest("hex");
 
 	if (cache()) {
@@ -48,7 +48,7 @@ async function async(code, transpileFunction) {
 	return await transpileFunction();
 }
 
-function sync(code, transpileFunction) {
+export function sync(code, transpileFunction) {
 	const hash = crypto.createHash("md5").update(code).digest("hex");
 
 	if (cache()) {
@@ -71,7 +71,7 @@ function sync(code, transpileFunction) {
 	return transpileFunction();
 }
 
-async function clear() {
+export async function clear() {
 	return await fs.unlink(cachePath);
 }
 
@@ -82,9 +82,9 @@ async function _save() {
 	);
 }
 
-const save = debounce(_save, 100);
+export const save = debounce(_save, 100);
 
-async function load() {
+export async function load() {
 	try {
 		if (await fs.access(cachePath)) {
 			return (cacheData = JSON.parse(
@@ -98,7 +98,7 @@ async function load() {
 	return (cacheData = {});
 }
 
-function loadSync() {
+export function loadSync() {
 	try {
 		if (fs.existsSync(cachePath)) {
 			return (cacheData = JSON.parse(
@@ -117,11 +117,11 @@ function nanoseconds() {
 	return hrTime[0] * 1000000000 + hrTime[1];
 }
 
-module.exports = {
-	sync,
-	async,
-	clear,
-	save,
-	load,
-	loadSync,
-};
+// module.exports = {
+// 	sync,
+// 	async,
+// 	clear,
+// 	save,
+// 	load,
+// 	loadSync,
+// };

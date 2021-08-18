@@ -1,4 +1,4 @@
-module.exports = (currentFile) => {
+export default (currentFile) => {
 	return {
 		minified: true,
 		comments: false,

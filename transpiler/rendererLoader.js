@@ -1,10 +1,10 @@
 // Handles loading ESModules in the renderer process.
 // https://github.com/nodejs/node/issues/31710
 
-import { protocol } from "electron";
+const { protocol } = electron;
 import * as fs from "fs";
-import { Logger } from "kernel/logger";
-import { async, sync } from "./esm";
+import { Logger } from "#kernel/logger";
+// import { async, sync } from "./esm.js";
 
 const logger = new Logger({ labels: [{ name: "Renderer Loader" }] });
 
@@ -23,7 +23,7 @@ protocol.registerBufferProtocol("import-sync", (request, callback) => {
 		if (!result) callback({ status: 404 });
 
 		// Transpile the result.
-		const transpiled = sync(result, url);
+		const transpiled = result;
 		if (transpiled) {
 			result = transpiled;
 		} else {
@@ -53,11 +53,7 @@ protocol.registerBufferProtocol("import", async (request, callback) => {
 			.catch(() => callback({ status: 404 }));
 
 		// Transpile the result.
-		const transpiled = await async(result, url).catch((e) => {
-			logger.error(
-				`Failed to transpile "${url}". Attempting to pass untranspiled result.\nError: ${e}`
-			);
-		});
+		const transpiled = result;
 		if (transpiled) {
 			result = transpiled;
 		}

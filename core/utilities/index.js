@@ -3,7 +3,7 @@
  */
 
 const electron = require("electron");
-const path = require("path");
+import path from "path";
 
 /**
  * A universal context function for identifying the context your code is running in.

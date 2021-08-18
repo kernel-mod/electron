@@ -1,3 +1,3 @@
-module.exports = (mod) => {
-	return require.resolve(mod); 
- };
+export default (mod) => {
+	return require.resolve(mod);
+};

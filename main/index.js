@@ -1,52 +1,55 @@
-import logger from "kernel/logger";
-import { app, protocol, ipcRenderer } from "electron";
-import * as heart from "kernel/heart/main";
+export const load = async (electron) => {
+	electron.protocol.registerSchemesAsPrivileged([
+		{ scheme: "import", privileges: { bypassCSP: true } },
+		{ scheme: "import-sync", privileges: { bypassCSP: true } },
+	]);
+	console.log(process.versions, electron.app.isReady());
+};
 
-logger.time("Loaded in");
+// import logger from "#kernel/logger";
 
-logger.log("Loading Kernel.");
+// logger.time("Loaded in");
+// logger.log("Loading Kernel.");
 
-protocol.registerSchemesAsPrivileged([
-	{ scheme: "import", privileges: { bypassCSP: true } },
-	{ scheme: "import-sync", privileges: { bypassCSP: true } },
-]);
+// // // Before ready.
 
-// Async to do async package stuff before loading client.
-// Don't worry packages load faster than straight async, most can load bulk in sync.
-(async () => {
-	// Load main packages.
-	const packageLoader = await import("../packageLoader");
+// const { app } = require("electron");
 
-	if (!app.commandLine.hasSwitch("kernel-safe-mode")) {
-		logger.time("Retrieved packages in");
-		const packages = packageLoader.getPackages();
-		const ogre = packageLoader.getOgre(packages, packages);
-		logger.timeEnd("Retrieved packages in");
-		logger.time("Loaded packages in");
-		await packageLoader.load(ogre, packages);
-		logger.timeEnd("Loaded packages in");
-	} else {
-		logger.log("Running in safe mode. All packages are initially disabled.");
-	}
+// console.log(app.isReady());
 
-	// Replace Electron's BrowserWindow with our own.
-	await import("./patchBrowserWindow");
+// // Load main packages.
+// // const packageLoader = require("../packageLoader");
 
-	app.on("ready", () => {
-		Promise.all([
-			// Set up heart.
-			import("kernel/heart/main"),
-			// Set up IPC.
-			import("./ipc"),
-			// Remove CSP.
-			import("./removeCSP"),
-			// Add Renderer Loader
-			import("../transpiler/rendererLoader"),
-		]).then(async () => {
-			logger.timeEnd("Loaded in");
+// // if (!app.commandLine.hasSwitch("kernel-safe-mode")) {
+// // 	console.time("Retrieved packages in");
+// // 	const packages = packageLoader.getPackages();
+// // 	const ogre = packageLoader.getOgre(packages, packages);
+// // 	console.timeEnd("Retrieved packages in");
+// // 	console.time("Loaded packages in");
+// // 	packageLoader.load(ogre, packages).then(() => {
+// // 		console.timeEnd("Loaded packages in");
+// // 	});
+// // } else {
+// // 	console.log("Running in safe mode. All packages are initially disabled.");
+// // }
 
-			// Start Discord.
-			await import("./startDiscord");
-		});
-	});
-})();
+// // Replace Electron's BrowserWindow with our own.
+// require("./patchBrowserWindow.js");
+
+// After ready EVEN THOUGH IT'S ALWAYS READY RDECTFYGUHIJOKPGHHUTFYIUHJIOK
+// app.whenReady().then(async () => {
+// 	await Promise.all([
+// 		// Set up heart.
+// 		// import("kernel/heart/main"),
+// 		// Set up IPC.
+// 		import("./ipc.js"),
+// 		// Remove CSP.
+// 		import("./removeCSP.js"),
+// 		// Add Renderer Loader
+// 		// import("../transpiler/rendererLoader.js"),
+// 	]);
+// 	logger.timeEnd("Loaded in");
+
+// 	// Start Discord.
+// 	await import("./startDiscord.js");
+// });
