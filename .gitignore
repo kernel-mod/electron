@@ -1,8 +1,8 @@
 # Don't commit the built files.
-./transpiled
-./dist
+transpiled
+dist
 # This is copied in by the builder.
-./src/preload/renderer.js
+src/preload/renderer.js
 
 # Logs
 logs
