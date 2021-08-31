@@ -22,18 +22,17 @@ export default async function injectRendererModule({
 	sync?: boolean;
 	onload?: () => void;
 }) {
-	const scriptElement = Object.assign(document.createElement("script"), {
+	const scriptElement: HTMLScriptElement = Object.assign(document.createElement("script"), {
 		type: "module",
 		async: (!sync).toString(),
 		src: `import${sync ? "-sync" : ""}://${resolve(script)}`,
 	});
-	// TODO: Figure out why TS doesn't like this.
-	// @ts-ignore
+
 	if (onload) scriptElement.addEventListener("load", onload);
 	while (!document.documentElement) {
 		await new Promise((resolve) => setImmediate(resolve));
 	}
+	
 	document.documentElement.appendChild(scriptElement);
-	// @ts-ignore
 	scriptElement.remove();
 }
