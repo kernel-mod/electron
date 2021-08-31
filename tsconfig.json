@@ -1,0 +1,8 @@
+{
+	"compilerOptions": {
+		"module": "ESNext",
+		"target": "ES2016",
+		"moduleResolution": "node"
+	},
+	"include": ["src/**/*"]
+}

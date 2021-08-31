@@ -1,0 +1,31 @@
+{
+	"jsc": {
+		"parser": {
+			"syntax": "typescript",
+			"tsx": true,
+			"decorators": true,
+			"dynamicImport": true,
+			"importAssertions": true
+		},
+		"transform": {},
+		"target": "es2016",
+		"loose": true,
+		"externalHelpers": false,
+
+		"keepClassNames": true,
+
+		"minify": {
+			"compress": true,
+			"mangle": true
+		}
+	},
+	"module": {
+		"type": "commonjs",
+		"strict": false,
+		"strictMode": true,
+		"lazy": false,
+		"noInterop": false
+	},
+	"minify": true,
+	"sourceMaps": "inline"
+}

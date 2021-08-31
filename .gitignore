@@ -1,9 +1,8 @@
-transpiler/cache.br
-renderer/react*
-renderer/scheduler*
-packages/*/pnpm-lock.yaml
-packages/*/yarn.lock
-packages/*/package-lock.json
+# Don't commit the built files.
+./transpiled
+./dist
+# This is copied in by the builder.
+./src/preload/renderer.js
 
 # Logs
 logs
