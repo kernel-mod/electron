@@ -1,9 +1,9 @@
 #!/usr/bin/env zx
 
-import fs from "fs-extra";
+import fs from "fs";
 import * as path from "path";
 
-await fs.rm("./transpiled", { recursive: true, force: true });
+await fs.promises.rm("./transpiled", { recursive: true, force: true });
 
 console.time("Successfully built");
 
@@ -13,7 +13,7 @@ await $`npx swc ./node_modules -d ./transpiled/node_modules --ignore electron/*.
 // Delete the unneeded modules.
 const unneededModules = ["electron", "@types", "asar", "@swc"];
 for (const mod of unneededModules) {
-	await fs.rm(`./transpiled/node_modules/${mod}`, {
+	await fs.promises.rm(`./transpiled/node_modules/${mod}`, {
 		recursive: true,
 		force: true,
 	});
@@ -25,7 +25,7 @@ await $`npx swc ./src -d ./transpiled`;
 const baseDir = path.join(__dirname, "..");
 cd(path.join(baseDir, "..", "browser"));
 await $`npm run build`;
-await fs.copyFile(
+await fs.promises.copyFile(
 	path.join(baseDir, "..", "browser", "dist", "index.js"),
 	path.join(baseDir, "src", "preload", "renderer.js")
 );

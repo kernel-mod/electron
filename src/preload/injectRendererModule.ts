@@ -1,10 +1,4 @@
-import fs from "fs-extra";
-import * as crypto from "crypto";
-import * as path from "path";
-
 import resolve from "./resolve";
-
-const cachePath = path.join(__dirname, "..", "..", "temp", "renderer");
 
 /**
  * A function for the PRELOAD that injects a new separate module into the renderer.
@@ -22,17 +16,20 @@ export default async function injectRendererModule({
 	sync?: boolean;
 	onload?: () => void;
 }) {
-	const scriptElement: HTMLScriptElement = Object.assign(document.createElement("script"), {
-		type: "module",
-		async: (!sync).toString(),
-		src: `import${sync ? "-sync" : ""}://${resolve(script)}`,
-	});
+	const scriptElement: HTMLScriptElement = Object.assign(
+		document.createElement("script"),
+		{
+			type: "module",
+			async: (!sync).toString(),
+			src: `import${sync ? "-sync" : ""}://${resolve(script)}`,
+		}
+	);
 
 	if (onload) scriptElement.addEventListener("load", onload);
 	while (!document.documentElement) {
 		await new Promise((resolve) => setImmediate(resolve));
 	}
-	
+
 	document.documentElement.appendChild(scriptElement);
 	scriptElement.remove();
 }

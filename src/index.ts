@@ -1,5 +1,4 @@
 import { app, protocol } from "electron";
-import * as path from "path";
 
 console.time("Loaded in");
 
@@ -26,7 +25,8 @@ app.on("ready", () => {
 		// Don't worry packages load faster than straight async, most can load bulk in sync.
 
 		// Load main packages.
-		// const packageLoader = await import("../packageLoader");
+		const packageLoader = await import("./packageLoader");
+		console.log(packageLoader);
 
 		// if (!app.commandLine.hasSwitch("kernel-safe-mode")) {
 		// 	console.time("Retrieved packages in");
