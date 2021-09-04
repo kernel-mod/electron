@@ -12,10 +12,11 @@ protocol.registerSchemesAsPrivileged([
 	},
 ]);
 
+// Replace Electron's BrowserWindow with our own.
+require("./patchBrowserWindow");
+
 app.on("ready", () => {
 	Promise.all([
-		// Replace Electron's BrowserWindow with our own.
-		import("./patchBrowserWindow"),
 		// Set up IPC.
 		import("./ipc"),
 		// Remove CSP.
@@ -52,8 +53,9 @@ app.on("ready", () => {
 		});
 
 		console.timeEnd("Loaded in");
-
-		// Start the app.
-		await import("./startOriginal");
 	});
 });
+
+// Start the app.
+// Run with require to make sure it doesn't await in main process because that can be bad.
+require("./startOriginal");

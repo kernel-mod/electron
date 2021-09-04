@@ -9,7 +9,7 @@ ipcMain.on("KERNEL_PRELOAD_DATA", (event) => {
 const senderHooks = new Map();
 
 session.defaultSession.webRequest.onBeforeRequest(
-	{ urls: ["*://*/*.js"] },
+	{ urls: ["*://*/*.js", "*://*/*.html"] },
 	(details, callback) => {
 		if (senderHooks.has(details.webContentsId)) {
 			senderHooks.get(details.webContentsId).reqs.push(() => {

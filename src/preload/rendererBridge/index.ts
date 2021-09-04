@@ -1,7 +1,14 @@
-import { contextBridge } from "electron";
+import { contextBridge, ipcRenderer } from "electron";
 
 import { default as ipc } from "./rendererIPC";
 
-contextBridge.exposeInMainWorld("kernel", {
-	ipc,
-});
+const preloadData = ipcRenderer.sendSync("KERNEL_PRELOAD_DATA");
+
+if (preloadData.contextIsolation) {
+	contextBridge.exposeInMainWorld("kernel", {
+		ipc,
+	});
+} else {
+	// @ts-ignore
+	window.kernel = { ipc };
+}

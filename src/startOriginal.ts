@@ -23,4 +23,5 @@ require.main.filename = startPath;
 // @ts-ignore
 electron.app.setAppPath?.(originalPath);
 electron.app.name = originalPackage.name;
-import(startPath);
+// Run with require to make sure it doesn't await in main process because that can be bad.
+require(startPath);
