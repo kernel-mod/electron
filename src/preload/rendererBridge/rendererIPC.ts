@@ -22,4 +22,7 @@ export default {
 	sendSync: (event: string, ...args: string[]) => {
 		return ipcRenderer.sendSync(event, ...args);
 	},
+	invoke: (event: string, ...args: string[]) => {
+		return ipcRenderer.invoke(event, ...args);
+	},
 };
