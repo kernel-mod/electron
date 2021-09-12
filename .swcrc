@@ -11,9 +11,7 @@
 		"target": "es2016",
 		"loose": true,
 		"externalHelpers": false,
-
 		"keepClassNames": true,
-
 		"minify": {
 			"compress": true,
 			"mangle": true

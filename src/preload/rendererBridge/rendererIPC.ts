@@ -2,27 +2,27 @@ import { ipcRenderer } from "electron";
 
 export default {
 	on: (
-		event: string,
+		channel: string,
 		listener: (event: Electron.IpcRendererEvent, ...args: any[]) => void
 	) => {
-		return ipcRenderer.on(event, listener);
+		return ipcRenderer.on(channel, listener);
 	},
 	once: (
-		event: string,
-		listener: (event: Electron.IpcRendererEvent, ...args: any[]) => void
+		channel: string,
+		listener: (channel: Electron.IpcRendererEvent, ...args: any[]) => void
 	) => {
-		return ipcRenderer.once(event, listener);
+		return ipcRenderer.once(channel, listener);
 	},
-	off: (event: string, listener: (...args: any[]) => void) => {
-		return ipcRenderer.off(event, listener);
+	off: (channel: string, listener: (...args: any[]) => void) => {
+		return ipcRenderer.off(channel, listener);
 	},
-	send: (event: string, ...args: string[]) => {
-		return ipcRenderer.send(event, ...args);
+	send: (channel: string, ...args: string[]) => {
+		return ipcRenderer.send(channel, ...args);
 	},
-	sendSync: (event: string, ...args: string[]) => {
-		return ipcRenderer.sendSync(event, ...args);
+	sendSync: (channel: string, ...args: string[]) => {
+		return ipcRenderer.sendSync(channel, ...args);
 	},
-	invoke: (event: string, ...args: string[]) => {
-		return ipcRenderer.invoke(event, ...args);
+	invoke: (channel: string, ...args: string[]) => {
+		return ipcRenderer.invoke(channel, ...args);
 	},
 };

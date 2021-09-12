@@ -3,10 +3,15 @@
 	"scripts": {
 		"build": "zx ./scripts/build.mjs"
 	},
-	"dependencies": {
+	"devDependencies": {
 		"@swc/cli": "^0.1.49",
-		"@swc/core": "^1.2.80",
-		"asar": "^3.0.3",
-		"electron": "^13.2.3"
+		"@swc/core": "^1.2.85",
+		"asar": "^3.1.0",
+		"electron": "^13.3.0",
+		"fs-extra": "^10.0.0",
+		"zx": "^4.2.0"
+	},
+	"dependencies": {
+		"chokidar": "^3.5.2"
 	}
 }

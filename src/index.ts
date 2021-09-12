@@ -12,6 +12,8 @@ protocol.registerSchemesAsPrivileged([
 	},
 ]);
 
+require("./packageLoader").init("main");
+
 // Replace Electron's BrowserWindow with our own.
 require("./patchBrowserWindow");
 
@@ -24,10 +26,6 @@ app.on("ready", () => {
 	]).then(async () => {
 		// Async to do async package stuff before loading client.
 		// Don't worry packages load faster than straight async, most can load bulk in sync.
-
-		// Load main packages.
-		const packageLoader = await import("./packageLoader");
-		console.log(packageLoader);
 
 		// if (!app.commandLine.hasSwitch("kernel-safe-mode")) {
 		// 	console.time("Retrieved packages in");
@@ -43,12 +41,10 @@ app.on("ready", () => {
 
 		protocol.registerFileProtocol("import", (request, callback) => {
 			const url = request.url.substr(9);
-			console.log(url);
 			callback({ path: url });
 		});
 		protocol.registerFileProtocol("import-sync", (request, callback) => {
 			const url = request.url.substr(14);
-			console.log(url);
 			callback({ path: url });
 		});
 
