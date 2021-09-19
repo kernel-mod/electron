@@ -42,7 +42,7 @@ const baseDir = path.join(__dirname, "..");
 
 // Build the renderer and copy it over.
 cd(path.join(baseDir, "..", "browser"));
-await $`npm run build`;
+await $`pnpm run build`;
 await fs.copyFile(
 	path.join(baseDir, "..", "browser", "dist", "index.js"),
 	path.join(baseDir, "transpiled", "preload", "renderer.js")
@@ -59,7 +59,7 @@ await fs.copyFile(
 cd(baseDir);
 
 console.time("Successfully packed");
-await $`asar pack ./transpiled ./dist/kernel.asar`;
+await $`pnpx asar pack ./transpiled ./dist/kernel.asar`;
 console.timeEnd("Successfully packed");
 
 console.timeEnd("Successfully built");

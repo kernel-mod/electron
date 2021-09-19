@@ -1,7 +1,7 @@
 {
 	"main": "index.js",
 	"scripts": {
-		"build": "zx ./scripts/build.mjs"
+		"build": "pnpx zx ./scripts/build.mjs"
 	},
 	"devDependencies": {
 		"@swc/cli": "^0.1.49",
