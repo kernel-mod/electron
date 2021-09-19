@@ -68,7 +68,7 @@ So if you want to point your Kernel distro location straight to it you would use
 
 > This may be subject to change.
 
-Packages are stored in a `packages` folder that has an arbitrary hight on your filesystem's tree. Even if your packages folder is three levels above `kernel.asar` it'll find it.
+Packages are stored in a `packages` folder that has an arbitrary height on your filesystem's tree. Even if your packages folder is three levels above `kernel.asar` it'll find it.
 
 They are loaded in all contexts. Main, preload, and renderer. This means Kernel allows packages to do things that no other Electron mod does.
 
