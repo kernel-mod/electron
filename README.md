@@ -12,7 +12,7 @@ Every Electron app (that I've seen so far) has a folder where the Electron binar
 
 Sometimes this `app` folder is a file and is called `app.asar` instead.
 
-If `app` is a folder, rename it to `app-original` and create a new folder called `ap`. If it's `app.asar` just create the new `app` folder.
+If `app` is a folder, rename it to `app-original` and create a new folder called `app`. If it's `app.asar` just create the new `app` folder.
 
 The new `app` folder you made tricks Electron into loading Kernel's code first. Kernel then starts up and loads your packages, then it starts the original app.
 
