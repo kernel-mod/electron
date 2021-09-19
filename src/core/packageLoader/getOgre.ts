@@ -1,3 +1,4 @@
+import processLocation from "../processLocation";
 import getPackages from "./getPackages";
 import Ogre from "./Ogre";
 import PackageInfo from "./PackageInfo";
@@ -5,6 +6,11 @@ import PackageInfo from "./PackageInfo";
 export default function getOgre(
 	packages: { [id: string]: PackageInfo } = getPackages()
 ): Ogre {
+	if (processLocation() === "RENDERER") {
+		// @ts-ignore
+		return kernel.ipc.sendSync("KERNEL_getOgre");
+	}
+
 	let ogre: Ogre = [{}];
 
 	// Add all the packages to the start of the ogre.

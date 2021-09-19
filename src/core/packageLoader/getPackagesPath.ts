@@ -1,8 +1,14 @@
 import fs from "fs";
 import path from "path";
+import processLocation from "../processLocation";
 
 // A function that goes up parent directories until it finds a folder named "packages".
 export default function getPackagesPath(): string {
+	if (processLocation() === "RENDERER") {
+		// @ts-ignore
+		return kernel.ipc.sendSync("KERNEL_getPackagesPath");
+	}
+
 	let lastPath = "";
 	let currentPath = path.join(__dirname, "..", "..");
 	let packagesPath = path.join(currentPath, "packages");

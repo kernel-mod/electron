@@ -2,10 +2,16 @@ import fs from "fs";
 import path from "path";
 import PackageInfo from "./PackageInfo";
 import getPackagesPath from "./getPackagesPath";
+import processLocation from "../processLocation";
 
 export default function getPackages(): {
 	[id: string]: PackageInfo;
 } {
+	if (processLocation() === "RENDERER") {
+		// @ts-ignore
+		return kernel.ipc.sendSync("KERNEL_getPackages");
+	}
+
 	const packagesPath = getPackagesPath();
 	const packages: {
 		[id: string]: PackageInfo;

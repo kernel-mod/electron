@@ -10,8 +10,5 @@
 		"electron": "^13.3.0",
 		"fs-extra": "^10.0.0",
 		"zx": "^4.2.0"
-	},
-	"dependencies": {
-		"chokidar": "^3.5.2"
 	}
 }

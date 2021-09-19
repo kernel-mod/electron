@@ -15,6 +15,10 @@
 		"minify": {
 			"compress": true,
 			"mangle": true
+		},
+		"paths": {
+			"@kernel": ["../core/src/index.js"],
+			"@kernel/*": ["../core/src/*"]
 		}
 	},
 	"module": {

@@ -1,4 +1,4 @@
-import resolve from "./resolve";
+import resolve from "../preload/resolve";
 
 /**
  * A function for the PRELOAD that injects a new separate module into the renderer.

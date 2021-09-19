@@ -1,8 +1,7 @@
 import { ipcMain, session } from "electron";
 import fs from "fs";
 import path from "path";
-import getOgre from "./packageLoader/getOgre";
-import getPackagesPath from "./packageLoader/getPackagesPath";
+import { packageLoader } from "./core";
 
 // Set up the IPC to send the data from the InjectedBrowserWindow to the preload.
 ipcMain.on("KERNEL_PRELOAD_DATA", (event) => {
@@ -46,7 +45,7 @@ ipcMain.on("KERNEL_FINISH_RENDERER_HOOK", (event) => {
 });
 
 ipcMain.handle("KERNEL_GET_RENDERER_PACKAGES", async (event) => {
-	const ogre = getOgre();
+	const ogre = packageLoader.getOgre();
 
 	const ogrePaths = [];
 
@@ -54,7 +53,7 @@ ipcMain.handle("KERNEL_GET_RENDERER_PACKAGES", async (event) => {
 		const layerPaths = [];
 		for (const packageID of Object.keys(layer)) {
 			const rendererPath = path.join(
-				getPackagesPath(),
+				packageLoader.getPackagesPath(),
 				packageID,
 				"renderer.js"
 			);
@@ -69,5 +68,5 @@ ipcMain.handle("KERNEL_GET_RENDERER_PACKAGES", async (event) => {
 });
 
 ipcMain.on("KERNEL_GET_PRELOAD_PACKAGES", async (event) => {
-	event.returnValue = getOgre();
+	event.returnValue = packageLoader.getOgre();
 });

@@ -1,6 +1,6 @@
-import * as path from "path";
-import * as electron from "electron";
-import * as fs from "fs";
+import path from "path";
+import electron from "electron";
+import fs from "fs";
 
 // We can get the path of the real injection point like this.
 const basePath = path.join(path.dirname(require.main.filename), "..");
@@ -18,10 +18,12 @@ const startPath = path.join(originalPath, originalPackage.main);
 
 // Don't corrupt the app on update.
 require.main.filename = startPath;
-
-// Load the app's original code.
 // @ts-ignore
 electron.app.setAppPath?.(originalPath);
+// Make sure the storage location doesn't change.
 electron.app.name = originalPackage.name;
+
+// Load the app's original code.
 // Run with require to make sure it doesn't await in main process because that can be bad.
 require(startPath);
+console.log("a", startPath);

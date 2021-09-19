@@ -2,8 +2,11 @@ import path from "path";
 import getPackages from "./getPackages";
 import loadedPackages from "./loadedPackages";
 import fs from "fs";
+import processLocation from "../processLocation";
 
-export default function loadPackage(packageID: string, context: string) {
+export default function loadPackage(packageID: string) {
+	const context = processLocation().toLowerCase();
+
 	const pack = getPackages()[packageID];
 
 	const packageScript = path.join(pack.path, `${context}.js`);

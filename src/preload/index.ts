@@ -1,15 +1,15 @@
 import { ipcRenderer } from "electron";
 import path from "path";
-import injectRendererModule from "./injectRendererModule";
+import injectRendererModule from "../core/injectRendererModule";
 
 ipcRenderer.sendSync("KERNEL_SETUP_RENDERER_HOOK");
 
 // Initialize the renderer bridge.
 require("./rendererBridge");
 
-const packageLoader = require("../packageLoader");
-packageLoader.init("preload");
-console.log("pre", packageLoader.loadedPackages);
+const { packageLoader } = require("../core");
+packageLoader.loadPackages(packageLoader.getOgre());
+console.log("pre", packageLoader);
 
 injectRendererModule({
 	script: path.join(__dirname, "renderer.js"),
@@ -32,6 +32,8 @@ injectRendererModule({
 
 // This is in the preload so we need to use the IPC to get the data from the main process where the BrowserWindow is injected.
 const preloadData = ipcRenderer.sendSync("KERNEL_PRELOAD_DATA");
+console.log(preloadData);
+
 if (preloadData?.originalPreload) {
-	import(preloadData.originalPreload);
+	require(preloadData.originalPreload);
 }
