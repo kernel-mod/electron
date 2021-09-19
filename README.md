@@ -76,7 +76,7 @@ They can do anything you can do in a normal Electron app including making new Br
 
 ### Structure
 
-Each package has an `index.json` file that looks something like this. Dependencies will always load before the package unless you are an idiot and make it cyclical.
+Each package has an `index.json` file that looks something like this. Dependencies will always load before the package unless you make it cyclical.
 
 ```json
 {
