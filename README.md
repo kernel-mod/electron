@@ -90,12 +90,22 @@ Packages are written in CommonJS, but there will be a template later that lets y
 
 To load a package in a specific context you simply create a file and name it `main.js`, `preload.js`, or `renderer.js`. All of these files are optional, only the `index.json` file is required. Kernel doesn't even care if you have none of them, but I do.
 
-All of the context files look the same, except the renderer has no Node access.
+All of the context files look the same, except the renderer has no Node access and uses ESModules.
 
+`main.js` `preload.js`
 ```js
 const path = require("path");
 
 module.exports = class PackageName {
+	start() {
+		console.log("Package loaded!", path);
+	}
+};
+```
+
+`renderer.js`
+```js
+export default class PackageName {
 	start() {
 		console.log("Package loaded!", path);
 	}
