@@ -43,30 +43,3 @@ ipcMain.on("KERNEL_FINISH_RENDERER_HOOK", (event) => {
 	senderHooks.get(event.sender.id).finish();
 	event.returnValue = true;
 });
-
-ipcMain.handle("KERNEL_GET_RENDERER_PACKAGES", async (event) => {
-	const ogre = packageLoader.getOgre();
-
-	const ogrePaths = [];
-
-	for (const layer of ogre) {
-		const layerPaths = [];
-		for (const packageID of Object.keys(layer)) {
-			const rendererPath = path.join(
-				packageLoader.getPackagesPath(),
-				packageID,
-				"renderer.js"
-			);
-			if (fs.existsSync(rendererPath)) {
-				layerPaths.push(rendererPath);
-			}
-		}
-		ogrePaths.push(layerPaths);
-	}
-
-	return ogrePaths;
-});
-
-ipcMain.on("KERNEL_GET_PRELOAD_PACKAGES", async (event) => {
-	event.returnValue = packageLoader.getOgre();
-});

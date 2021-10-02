@@ -1,7 +1,7 @@
 import { app, protocol } from "electron";
 import { packageLoader } from "./core";
 
-console.time("Loaded in");
+console.time("Loaded before app ready in");
 
 console.log("Loading Kernel.");
 
@@ -18,7 +18,10 @@ packageLoader.loadPackages(packageLoader.getOgre());
 // Replace Electron's BrowserWindow with our own.
 require("./patchBrowserWindow");
 
+console.timeEnd("Loaded before app ready in");
+
 app.on("ready", () => {
+	console.time("Loaded after app ready in");
 	// Set up IPC.
 	require("./ipc");
 	// Remove CSP.
@@ -40,6 +43,7 @@ app.on("ready", () => {
 
 	protocol.registerFileProtocol("import", (request, callback) => {
 		const url = request.url.substr(9);
+		console.log(url);
 		callback({ path: url });
 	});
 	protocol.registerFileProtocol("import-sync", (request, callback) => {
@@ -47,7 +51,7 @@ app.on("ready", () => {
 		callback({ path: url });
 	});
 
-	console.timeEnd("Loaded in");
+	console.timeEnd("Loaded after app ready in");
 });
 
 // Start the app.

@@ -16,6 +16,8 @@ export default async function injectRendererModule({
 	sync?: boolean;
 	onload?: () => void;
 }) {
+	console.log("injectRendererModule", script);
+
 	const scriptElement: HTMLScriptElement = Object.assign(
 		document.createElement("script"),
 		{

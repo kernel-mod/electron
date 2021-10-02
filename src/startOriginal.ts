@@ -26,4 +26,3 @@ electron.app.name = originalPackage.name;
 // Load the app's original code.
 // Run with require to make sure it doesn't await in main process because that can be bad.
 require(startPath);
-console.log("a", startPath);

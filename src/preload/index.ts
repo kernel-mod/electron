@@ -7,13 +7,11 @@ ipcRenderer.sendSync("KERNEL_SETUP_RENDERER_HOOK");
 // Initialize the renderer bridge.
 require("./rendererBridge");
 
-const { packageLoader } = require("../core");
-packageLoader.loadPackages(packageLoader.getOgre());
-console.log("pre", packageLoader);
+// const { packageLoader } = require("../core");
+// packageLoader.loadPackages(packageLoader.getOgre());
 
 injectRendererModule({
 	script: path.join(__dirname, "renderer.js"),
-	onload: () => ipcRenderer.sendSync("KERNEL_FINISH_RENDERER_HOOK"),
 });
 
 // const packagesPath = packageLoader.getPackagesPath();
@@ -32,7 +30,6 @@ injectRendererModule({
 
 // This is in the preload so we need to use the IPC to get the data from the main process where the BrowserWindow is injected.
 const preloadData = ipcRenderer.sendSync("KERNEL_PRELOAD_DATA");
-console.log(preloadData);
 
 if (preloadData?.originalPreload) {
 	require(preloadData.originalPreload);
