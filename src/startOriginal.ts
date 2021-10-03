@@ -4,7 +4,7 @@ import fs from "fs";
 
 // We can get the path of the real injection point like this.
 const basePath = path.join(path.dirname(require.main.filename), "..");
-let originalPath = path.join(basePath, "app.asar");
+let originalPath = path.join(basePath, "app-original.asar");
 // Check if originalPath file exists.
 if (!fs.existsSync(originalPath)) {
 	originalPath = path.join(basePath, "app-original");
