@@ -13,8 +13,8 @@
 		"externalHelpers": false,
 		"keepClassNames": true,
 		"minify": {
-			"compress": true,
-			"mangle": true
+			"compress": false,
+			"mangle": false
 		},
 		"paths": {
 			"@kernel": ["../core/src/index.js"],
@@ -28,6 +28,6 @@
 		"lazy": false,
 		"noInterop": false
 	},
-	"minify": true,
+	"minify": false,
 	"sourceMaps": "inline"
 }

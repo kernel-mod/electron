@@ -1,10 +1,35 @@
 import loadedPackages from "./getPackages";
-import { ipcMain } from "electron";
+import { ipcMain, ipcRenderer } from "electron";
+import processLocation from "../processLocation";
 
-export default function startPackage(packageID: string) {
+switch (processLocation()) {
+	case "MAIN":
+		ipcMain.on("KERNEL_startPackage", (event, packageID: string) => {
+			startPackage(packageID, false);
+		});
+		break;
+	case "PRELOAD":
+		ipcRenderer.on("KERNEL_startPackage", (event, packageID: string) => {
+			startPackage(packageID, false);
+		});
+		break;
+}
+
+export default function startPackage(
+	packageID: string,
+	broadcast: boolean = true
+) {
 	if (loadedPackages[packageID]) {
-		console.log(`Starting package ${packageID}`);
-		ipcMain.emit("KERNEL_PACKAGE_START", packageID);
+		if (broadcast) {
+			switch (processLocation()) {
+				case "MAIN":
+					ipcMain.emit("KERNEL_PACKAGE_START", packageID);
+					break;
+				case "PRELOAD":
+					ipcRenderer.emit("KERNEL_PACKAGE_START", packageID);
+					break;
+			}
+		}
 		loadedPackages[packageID].instance.start?.();
 	}
 }

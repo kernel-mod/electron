@@ -17,13 +17,13 @@ export default function loadPackage(packageID: string) {
 			packageClass.default ? packageClass.default : packageClass
 		)();
 
-		loadedPackages[packageID] = {
+		loadedPackages.set(packageID, {
 			enabled: true,
 			...pack,
 			instance: packageInstance,
-		};
+		});
 
-		if (loadedPackages[packageID].enabled) {
+		if (loadedPackages.get(packageID).enabled) {
 			packageInstance.start?.();
 		}
 	}

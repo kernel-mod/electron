@@ -7,8 +7,8 @@ ipcRenderer.sendSync("KERNEL_SETUP_RENDERER_HOOK");
 // Initialize the renderer bridge.
 require("./rendererBridge");
 
-// const { packageLoader } = require("../core");
-// packageLoader.loadPackages(packageLoader.getOgre());
+const { packageLoader } = require("../core");
+packageLoader.loadPackages(packageLoader.getOgre());
 
 injectRendererModule({
 	script: path.join(__dirname, "renderer.js"),

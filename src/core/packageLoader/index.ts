@@ -13,6 +13,8 @@ import { ipcMain } from "electron";
 import path from "path";
 import fs from "fs";
 
+import processLocation from "../processLocation";
+
 export {
 	getPackages,
 	getPackagesPath,
@@ -22,6 +24,8 @@ export {
 	loadedPackages,
 	PackageInfo,
 	Ogre,
+	startPackage,
+	stopPackage,
 };
 
 // // A debounce function.
@@ -44,40 +48,9 @@ export {
 // 	};
 // }
 
-ipcMain.handle("KERNEL_getOgre", (event) => {
-	event.returnValue = getOgre();
-});
-ipcMain.handle("KERNEL_getPackages", (event) => {
-	event.returnValue = getPackages();
-});
-ipcMain.handle("KERNEL_getPackagesPath", (event) => {
-	event.returnValue = getPackagesPath();
-});
-
-ipcMain.on("KERNEL_getRendererPackages", (event) => {
-	const ogre = getOgre();
-	const packages = getPackages();
-
-	const ogrePaths = [];
-
-	for (const layer of ogre) {
-		const layerPaths = [];
-		for (const packageID of Object.keys(layer)) {
-			// Renderer is expected to be bundled so this should work fine.
-			const rendererPath = path.join(packages[packageID].path, "renderer.js");
-			if (fs.existsSync(rendererPath)) {
-				layerPaths.push(rendererPath);
-			}
-		}
-		if (layerPaths.length > 0) ogrePaths.push(layerPaths);
-	}
-
-	event.returnValue = ogrePaths;
-});
-
-ipcMain.on("KERNEL_startPackage", (event, packageID: string) => {
-	startPackage(packageID);
-});
-ipcMain.on("KERNEL_stopPackage", (event, packageID: string) => {
-	stopPackage(packageID);
-});
+switch (processLocation()) {
+	case "MAIN":
+		break;
+	default:
+		break;
+}

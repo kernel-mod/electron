@@ -1,15 +1,12 @@
 import electron from "electron";
+import memoize from "./memoize";
 
 /**
  * A universal context function for identifying the context your code is running in.
  * @returns {string("MAIN","PRELOAD","RENDERER","UNKNOWN")|string} The name of the current process.
  * @returns {string} The name of the current process.
  */
-export default function processLocation():
-	| "MAIN"
-	| "PRELOAD"
-	| "RENDERER"
-	| "UNKNOWN" {
+function processLocation(): "MAIN" | "PRELOAD" | "RENDERER" {
 	if (!electron) {
 		return "RENDERER";
 	} else if (electron?.ipcMain) {
@@ -17,5 +14,7 @@ export default function processLocation():
 	} else if (electron?.ipcRenderer) {
 		return "PRELOAD";
 	}
-	return "UNKNOWN";
+	return "RENDERER";
 }
+
+export default memoize(processLocation);
