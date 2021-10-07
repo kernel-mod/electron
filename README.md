@@ -4,6 +4,8 @@ A super small and fast Electron client mod with the most capability.
 
 ## Installation
 
+Get the [CLI installer](https://github.com/kernel-mod/installer-cli) and run it.
+
 This will be easier _eventually_, don't worry. But making the mod more functional and easier for developers is a high priority.
 
 First of all, you need to download Kernel. Currently you need to build Kernel yourself because I'm too lazy to write a CI to build it for you for now.
@@ -93,6 +95,7 @@ To load a package in a specific context you simply create a file and name it `ma
 All of the context files look the same, except the renderer has no Node access and uses ESModules.
 
 `main.js` `preload.js`
+
 ```js
 const path = require("path");
 
@@ -104,10 +107,11 @@ module.exports = class PackageName {
 ```
 
 `renderer.js`
+
 ```js
 export default class PackageName {
 	start() {
 		console.log("Package loaded!", path);
 	}
-};
+}
 ```
