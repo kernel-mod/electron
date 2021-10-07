@@ -3,8 +3,13 @@ import getPackages from "./getPackages";
 import loadedPackages from "./loadedPackages";
 import fs from "fs";
 import processLocation from "../processLocation";
+import startPackage from "./startPackage";
+import _startPackage from "./_startPackage";
 
-export default function loadPackage(packageID: string) {
+export default function loadPackage(
+	packageID: string,
+	broadcast: boolean = true
+) {
 	const context = processLocation().toLowerCase();
 
 	const pack = getPackages()[packageID];
@@ -24,7 +29,11 @@ export default function loadPackage(packageID: string) {
 		});
 
 		if (loadedPackages.get(packageID).enabled) {
-			packageInstance.start?.();
+			if (broadcast) {
+				startPackage(packageID);
+			} else {
+				_startPackage(packageID);
+			}
 		}
 	}
 }

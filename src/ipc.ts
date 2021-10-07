@@ -1,7 +1,4 @@
 import { ipcMain, session } from "electron";
-import fs from "fs";
-import path from "path";
-import { packageLoader } from "./core";
 
 // Set up the IPC to send the data from the InjectedBrowserWindow to the preload.
 ipcMain.on("KERNEL_PRELOAD_DATA", (event) => {

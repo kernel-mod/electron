@@ -1,5 +1,5 @@
 import { app, protocol } from "electron";
-import { packageLoader } from "./core";
+import * as packageLoader from "./core/packageLoader";
 
 console.time("Loaded before app ready in");
 
@@ -13,33 +13,15 @@ protocol.registerSchemesAsPrivileged([
 	},
 ]);
 
-packageLoader.loadPackages(packageLoader.getOgre());
+packageLoader.loadPackages(packageLoader.getOgre(), false);
 
 // Replace Electron's BrowserWindow with our own.
 require("./patchBrowserWindow");
 
 console.timeEnd("Loaded before app ready in");
 
-app.on("ready", () => {
+app.on("ready", async () => {
 	console.time("Loaded after app ready in");
-	// Set up IPC.
-	require("./ipc");
-	// Remove CSP.
-	require("./removeCSP");
-	// Async to do async package stuff before loading client.
-	// Don't worry packages load faster than straight async, most can load bulk in sync.
-
-	// if (!app.commandLine.hasSwitch("kernel-safe-mode")) {
-	// 	console.time("Retrieved packages in");
-	// 	const packages = packageLoader.getPackages();
-	// 	const ogre = packageLoader.getOgre(packages, packages);
-	// 	console.timeEnd("Retrieved packages in");
-	// 	console.time("Loaded packages in");
-	// 	await packageLoader.load(ogre, packages);
-	// 	console.timeEnd("Loaded packages in");
-	// } else {
-	// 	console.log("Running in safe mode. All packages are initially disabled.");
-	// }
 
 	protocol.registerFileProtocol("import", (request, callback) => {
 		const url = request.url.substr(9);
@@ -51,7 +33,14 @@ app.on("ready", () => {
 		callback({ path: url });
 	});
 
-	console.timeEnd("Loaded after app ready in");
+	await Promise.all([
+		// Set up IPC.
+		import("./ipc"),
+		// Remove CSP.
+		import("./removeCSP"),
+	]).then(() => {
+		console.timeEnd("Loaded after app ready in");
+	});
 });
 
 // Start the app.

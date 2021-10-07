@@ -1,13 +1,13 @@
 import { ipcRenderer } from "electron";
 import path from "path";
 import injectRendererModule from "../core/injectRendererModule";
+import * as packageLoader from "../core/packageLoader";
 
 ipcRenderer.sendSync("KERNEL_SETUP_RENDERER_HOOK");
 
 // Initialize the renderer bridge.
 require("./rendererBridge");
 
-const { packageLoader } = require("../core");
 packageLoader.loadPackages(packageLoader.getOgre());
 
 injectRendererModule({
