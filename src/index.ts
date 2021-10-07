@@ -25,7 +25,6 @@ app.on("ready", async () => {
 
 	protocol.registerFileProtocol("import", (request, callback) => {
 		const url = request.url.substr(9);
-		console.log(url);
 		callback({ path: url });
 	});
 	protocol.registerFileProtocol("import-sync", (request, callback) => {
