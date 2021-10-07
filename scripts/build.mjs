@@ -66,6 +66,6 @@ console.timeEnd("Successfully built");
 
 const stats = fs.statSync("./dist/kernel.asar");
 const fileSizeInBytes = stats.size;
-const fileSizeInMegabytes = fileSizeInBytes / 1024;
+const fileSizeInKilobytes = fileSizeInBytes / 1024;
 
-console.log(`Build size: ${fileSizeInMegabytes.toLocaleString()} KB`);
+console.log(`Build size: ${fileSizeInKilobytes.toLocaleString()} KB`);
