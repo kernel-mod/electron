@@ -17,7 +17,8 @@ function getPackagesPath(): string {
 	switch (processLocation()) {
 		case "MAIN":
 			let lastPath = "";
-			let currentPath = path.join(__dirname, "..", "..");
+			const kernelPath = path.join(__dirname, "..", "..", "..");
+			let currentPath = kernelPath;
 			let packagesPath = path.join(currentPath, "packages");
 
 			// Weird thing???
@@ -36,12 +37,7 @@ function getPackagesPath(): string {
 
 			// If it wasn't found, create the "packages" folder.
 			if (!fs.existsSync(packagesPath)) {
-				const createdPackagesPath = path.join(
-					__dirname,
-					"..",
-					"..",
-					"packages"
-				);
+				const createdPackagesPath = path.join(kernelPath, "packages");
 				console.log(
 					`No packages directory found. Creating one at "${createdPackagesPath}".`
 				);

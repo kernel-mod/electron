@@ -27,11 +27,14 @@ export default function getOgre(
 				ogre[0][id] = pack;
 			}
 
+			if (Object.keys(ogre[0]).length === 0) return [];
+
 			// Adjust the order of the items based on their dependencies.
 			let lastOgres = new Set();
 			// Adjust while there are still changes being made.
-			while (!lastOgres.has(JSON.stringify(ogre))) {
-				lastOgres.add(JSON.stringify(ogre));
+			const jsond = JSON.stringify(ogre);
+			while (!lastOgres.has(jsond)) {
+				lastOgres.add(jsond);
 
 				// Copy because of circular deps.
 				const iOgre = [...ogre];
