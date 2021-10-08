@@ -1,7 +1,11 @@
 #!/usr/bin/env zx
 
 import fs from "fs-extra";
-import * as path from "path";
+import path from "path";
+import swc from "@swc/core";
+import { promisify } from "util";
+import glob from "glob";
+import asar from "asar";
 
 try {
 	await fs.emptyDir("./dist");
@@ -10,33 +14,78 @@ await fs.rm("./transpiled", { recursive: true, force: true });
 
 console.time("Successfully built");
 
-// TODO: Just copy over and minify the Node modules instead.
-// Build the required Node modules into the temporary directory.
-// TODO: Figure out how --ignore works.
-// await $`npx swc ./node_modules -d ./transpiled/node_modules --ignore electron/*.js`;
-// // This is for if a module needs files with extensions other than .js such as .json.
-// await fs.copy("./node_modules", "./transpiled/node_modules", {
-// 	recursive: true,
-// 	filter: (src, dest) => {
-// 		return ![".pnpm", ".bin"].includes(path.basename(src));
-// 	},
-// 	dereference: true,
-// });
+const production = !argv.hasOwnProperty("dev");
 
-await $`npx swc ./src -d ./transpiled`;
+const globp = promisify(glob);
 
-// Delete the unneeded modules.
-// const unneededModules = [
-// 	"@types",
-// 	"@swc",
-// 	...Object.keys(JSON.parse(fs.readFileSync("./package.json")).devDependencies),
-// ];
-// for (const mod of unneededModules) {
-// 	await fs.rm(`./transpiled/node_modules/${mod}`, {
+const sourceFiles = (
+	await globp(path.join(__dirname, "..", "src", "**/*.ts"), {}).catch((e) =>
+		console.error("Failed to glob source files:", e)
+	)
+).map((p) => ({
+	input: p,
+	// Dumb make better.
+	output: p
+		.replace("/src/", "/transpiled/")
+		.replace("\\src\\", "\\transpiled\\")
+		.replace(/\.tsx?$/, ".js"),
+}));
+
+for (const file of sourceFiles) {
+	const code = fs.readFileSync(file.input, "utf8");
+	swc
+		.transform(code, {
+			// Some options cannot be specified in .swcrc
+			filename: path.basename(file.input),
+			jsc: {
+				parser: {
+					syntax: "typescript",
+					tsx: true,
+					decorators: true,
+					dynamicImport: true,
+					importAssertions: true,
+				},
+				transform: {},
+				target: "es2016",
+				loose: true,
+				externalHelpers: false,
+				keepClassNames: true,
+				minify: {
+					compress: production,
+					mangle: production,
+				},
+				// paths: {
+				// 	"@kernel": ["../core/src/index.js"],
+				// 	"@kernel/*": ["../core/src/*"],
+				// },
+			},
+			module: {
+				type: "commonjs",
+				strict: false,
+				strictMode: true,
+				lazy: false,
+				noInterop: false,
+			},
+			minify: production,
+			sourceMaps: "inline",
+		})
+		.then((output) => {
+			fs.ensureFileSync(file.output);
+			fs.writeFile(file.output, output.code);
+		});
+}
+
+// await fs.copy(
+// 	"./node_modules/@swc/helpers",
+// 	"./transpiled/node_modules/@swc/helpers",
+// 	{
 // 		recursive: true,
-// 		force: true,
-// 	});
-// }
+// 		// filter: (src, dest) => {
+// 		// 	return ![".pnpm", ".bin"].includes(path.basename(src));
+// 		// },
+// 		dereference: true,
+// 	}
+// );
 
 const baseDir = path.join(__dirname, "..");
 
@@ -56,10 +105,11 @@ await fs.copyFile(
 // 	path.join(baseDir, "transpiled", "core.js")
 // );
 
-cd(baseDir);
-
 console.time("Successfully packed");
-await $`pnpx asar pack ./transpiled ./dist/kernel.asar`;
+await asar.createPackage(
+	path.join(__dirname, "..", "transpiled"),
+	path.join(__dirname, "..", "dist", "kernel.asar")
+);
 console.timeEnd("Successfully packed");
 
 console.timeEnd("Successfully built");
