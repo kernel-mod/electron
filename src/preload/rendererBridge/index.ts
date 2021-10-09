@@ -12,7 +12,7 @@ const api = {
 	},
 };
 
-if (preloadData.contextIsolation) {
+if (!!preloadData.windowOptions.webPreferences.contextIsolation) {
 	contextBridge.exposeInMainWorld("kernel", api);
 } else {
 	// @ts-ignore
