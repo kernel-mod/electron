@@ -35,8 +35,5 @@ export default function loadPackage(
 				_startPackage(packageID);
 			}
 		}
-	} else {
-		console.log("Okay apparently the directory doesnt actually exist lmao")
-		console.log(packageScript)
 	}
 }
