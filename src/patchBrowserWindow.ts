@@ -31,9 +31,9 @@ const electronProxy = new Proxy(electron, {
 
 						// Put the location and the original preload in a place the main IPC can easily reach.
 						// @ts-ignore
-						window.webContents.__KERNEL__ = {
-							originalPreload,
-							contextIsolation: !!options.webPreferences.contextIsolation,
+						window.webContents.kernelWindowData = {
+							originalPreload: originalPreload
+							windowOptions: options
 						};
 
 						window.webContents.openDevTools();
