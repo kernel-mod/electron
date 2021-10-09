@@ -2,6 +2,10 @@
 
 A super small and fast Electron client mod with the most capability.
 
+## Community
+
+Join on [Discord](https://discord.gg/8mPTjTZ4SZ) or [Matrix](https://matrix.to/#/!iWdiwStUmqwDcNfYbG:bigdumb.gq?via=bigdumb.gq&via=catvibers.me&via=matrix.org).
+
 ## Installation
 
 Get the [CLI installer](https://github.com/kernel-mod/installer-cli) and run it.
