@@ -2,7 +2,7 @@ import { contextBridge, ipcRenderer } from "electron";
 import packages from "./packages";
 import broadcast from "../../core/broadcast";
 
-const preloadData = ipcRenderer.sendSync("KERNEL_PRELOAD_DATA");
+const preloadData = ipcRenderer.sendSync("KERNEL_WINDOW_DATA");
 
 const api = {
 	broadcast,
@@ -12,7 +12,7 @@ const api = {
 	},
 };
 
-if (preloadData.contextIsolation) {
+if (!!preloadData.windowOptions.webPreferences?.contextIsolation) {
 	contextBridge.exposeInMainWorld("kernel", api);
 } else {
 	// @ts-ignore
