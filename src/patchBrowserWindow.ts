@@ -32,7 +32,7 @@ const electronProxy = new Proxy(electron, {
 						// Put the location and the original preload in a place the main IPC can easily reach.
 						// @ts-ignore
 						window.webContents.kernelWindowData = {
-							originalPreload: originalPreload
+							originalPreload: originalPreload,
 							windowOptions: options
 						};
 
