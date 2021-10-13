@@ -6,6 +6,14 @@ import swc from "@swc/core";
 import { promisify } from "util";
 import glob from "glob";
 import asar from "asar";
+import { exec } from "child_process";
+import minimist from "minimist";
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+const argv = minimist(process.argv.slice(2));
 
 try {
 	await fs.emptyDir("./dist");
@@ -51,7 +59,7 @@ for (const file of sourceFiles) {
 				externalHelpers: false,
 				keepClassNames: true,
 				minify: {
-					compress: production,
+					compress: false, // TODO: Figure out why this breaks package loading in main.
 					mangle: production,
 				},
 				// paths: {
@@ -75,6 +83,7 @@ for (const file of sourceFiles) {
 		});
 }
 
+// Save this for possibly using it in the future.
 // await fs.copy(
 // 	"./node_modules/@swc/helpers",
 // 	"./transpiled/node_modules/@swc/helpers",
@@ -90,20 +99,23 @@ for (const file of sourceFiles) {
 const baseDir = path.join(__dirname, "..");
 
 // Build the renderer and copy it over.
-cd(path.join(baseDir, "..", "browser"));
-await $`pnpm run build`;
+await new Promise((resolve) =>
+	exec(
+		`cd ${path.join(baseDir, "..", "browser")} && pnpm run build`,
+		(err, stdout, stderr) => {
+			if (err) {
+				console.error(err);
+				return;
+			}
+			console.log(stdout);
+			resolve();
+		}
+	)
+);
 await fs.copyFile(
 	path.join(baseDir, "..", "browser", "dist", "index.js"),
-	path.join(baseDir, "transpiled", "preload", "renderer.js")
+	path.join(baseDir, "transpiled", "preload", "renderer", "index.js")
 );
-
-// Build the core and copy it over.
-// cd(path.join(baseDir, "..", "core"));
-// await $`npm run build`;
-// await fs.copyFile(
-// 	path.join(baseDir, "..", "core", "dist", "index.js"),
-// 	path.join(baseDir, "transpiled", "core.js")
-// );
 
 console.time("Successfully packed");
 await asar.createPackage(

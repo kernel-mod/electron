@@ -4,6 +4,7 @@ import PackageInfo from "./PackageInfo";
 import getPackagesPath from "./getPackagesPath";
 import processLocation from "../processLocation";
 import { ipcMain, ipcRenderer } from "electron";
+import loadedPackages from "./loadedPackages";
 
 switch (processLocation()) {
 	case "MAIN":
@@ -30,12 +31,21 @@ export default function getPackages(): {
 					const packageInfo: PackageInfo = JSON.parse(
 						fs.readFileSync(path.join(packagePath, "index.json"), "utf8")
 					);
+
+					// Automatically start new packages.
+					packageInfo.enabled = loadedPackages[packageInfo.id]?.hasOwnProperty(
+						"enabled"
+					)
+						? !!loadedPackages[packageInfo.id].enabled
+						: true;
+
 					packageInfo.path = packagePath;
 					packages[packageInfo.id] = packageInfo;
 				}
 
 				return packages;
-			} catch {
+			} catch (e) {
+				console.error(e);
 				return {};
 			}
 		case "PRELOAD":

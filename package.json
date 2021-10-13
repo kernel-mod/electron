@@ -1,16 +1,16 @@
 {
 	"main": "index.js",
 	"scripts": {
-		"build": "pnpx zx ./scripts/build.mjs",
-		"build-dev": "pnpx zx ./scripts/build.mjs --dev"
+		"build": "node ./scripts/build.mjs",
+		"build-dev": "node ./scripts/build.mjs --dev"
 	},
 	"devDependencies": {
-		"@swc/cli": "^0.1.49",
-		"@swc/core": "^1.2.85",
+		"@swc/cli": "^0.1.51",
+		"@swc/core": "^1.2.95",
 		"asar": "^3.1.0",
 		"electron": "^13.3.0",
 		"fs-extra": "^10.0.0",
 		"glob": "^7.2.0",
-		"zx": "^4.2.0"
+		"minimist": "^1.2.5"
 	}
 }

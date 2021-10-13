@@ -33,7 +33,7 @@ const electronProxy = new Proxy(electron, {
 						// @ts-ignore
 						window.webContents.kernelWindowData = {
 							originalPreload: originalPreload,
-							windowOptions: options
+							windowOptions: options,
 						};
 
 						window.webContents.openDevTools();

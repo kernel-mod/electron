@@ -1,5 +1,6 @@
-import * as packageLoader from "../../core/packageLoader";
-import broadcast from "../../core/broadcast";
+import * as packageLoader from "../../../core/packageLoader";
+import broadcast from "../../../core/broadcast";
+import fs from "fs";
 
 export default {
 	getPackages(): {
@@ -7,12 +8,17 @@ export default {
 	} {
 		return packageLoader.getPackages();
 	},
-	getOgre(packages: {
-		[id: string]: packageLoader.PackageInfo;
-	}): packageLoader.Ogre {
-		// Hot.
-		packages ??= packageLoader.getPackages();
+	getOgre(
+		packages: {
+			[id: string]: packageLoader.PackageInfo;
+		} = packageLoader.getPackages()
+	): packageLoader.Ogre {
 		return packageLoader.getOgre(packages);
+	},
+	hasRendererScript(packageID: string) {
+		return fs.existsSync(
+			`${packageLoader.getPackages()[packageID].path}/renderer.js`
+		);
 	},
 	startPackage(packageID: string) {
 		broadcast.emit("startPackage", packageID);
@@ -21,10 +27,10 @@ export default {
 		broadcast.emit("stopPackage", packageID);
 	},
 	events: {
-		on(event: string, callback: (pack: packageLoader.PackageInfo) => void) {
+		on(event: string, callback: (...data: any) => void) {
 			broadcast.on(event, callback);
 		},
-		once(event: string, callback: (pack: packageLoader.PackageInfo) => void) {
+		once(event: string, callback: (...data: any) => void) {
 			broadcast.once(event, callback);
 		},
 		off(event: string, callback: (pack: packageLoader.PackageInfo) => void) {

@@ -17,18 +17,18 @@ export default function loadPackage(
 	const packageScript = path.join(pack.path, `${context}.js`);
 
 	if (fs.existsSync(packageScript)) {
-		const packageClass = require(packageScript);
-		const packageInstance = new (
-			packageClass.default ? packageClass.default : packageClass
-		)();
+		const packageExport = require(packageScript);
+		const packageInstance = packageExport.default
+			? packageExport.default
+			: packageExport;
 
-		loadedPackages.set(packageID, {
-			enabled: true,
+		loadedPackages[packageID] = {
 			...pack,
+			enabled: true,
 			instance: packageInstance,
-		});
+		};
 
-		if (loadedPackages.get(packageID).enabled) {
+		if (loadedPackages[packageID].enabled) {
 			if (broadcast) {
 				startPackage(packageID);
 			} else {

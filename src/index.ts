@@ -6,9 +6,9 @@ console.time("Loaded before app ready in");
 console.log("Loading Kernel.");
 
 protocol.registerSchemesAsPrivileged([
-	{ scheme: "import", privileges: { bypassCSP: true } },
+	{ scheme: "kernel", privileges: { bypassCSP: true } },
 	{
-		scheme: "import-sync",
+		scheme: "kernel-sync",
 		privileges: { bypassCSP: true },
 	},
 ]);
@@ -23,12 +23,12 @@ console.timeEnd("Loaded before app ready in");
 app.on("ready", async () => {
 	console.time("Loaded after app ready in");
 
-	protocol.registerFileProtocol("import", (request, callback) => {
-		const url = request.url.substr(9);
+	protocol.registerFileProtocol("kernel", (request, callback) => {
+		const url = request.url.substr(8);
 		callback({ path: url });
 	});
-	protocol.registerFileProtocol("import-sync", (request, callback) => {
-		const url = request.url.substr(14);
+	protocol.registerFileProtocol("kernel-sync", (request, callback) => {
+		const url = request.url.substr(12);
 		callback({ path: url });
 	});
 

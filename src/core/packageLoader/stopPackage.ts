@@ -1,4 +1,5 @@
 import broadcast from "../broadcast";
+import loadedPackages from "./loadedPackages";
 import _stopPackage from "./_stopPackage";
 
 broadcast.on("stopPackage", (packageID: string) => {
@@ -6,5 +7,12 @@ broadcast.on("stopPackage", (packageID: string) => {
 });
 
 export default function stopPackage(packageID: string) {
-	broadcast.emit("stopPackage", packageID);
+	const pack = loadedPackages[packageID];
+	if (pack.enabled) {
+		loadedPackages[packageID] = {
+			...pack,
+			enabled: false,
+		};
+		broadcast.emit("stopPackage", packageID);
+	}
 }

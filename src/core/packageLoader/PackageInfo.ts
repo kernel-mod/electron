@@ -4,4 +4,5 @@ export default interface PackageInfo {
 	path: string;
 	version?: string;
 	dependencies?: string[];
+	enabled?: boolean;
 }

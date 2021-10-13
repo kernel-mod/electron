@@ -6,12 +6,12 @@ import * as packageLoader from "../core/packageLoader";
 ipcRenderer.sendSync("KERNEL_SETUP_RENDERER_HOOK");
 
 // Initialize the renderer bridge.
-require("./rendererBridge");
+require("./renderer/bridge/index.js");
 
 packageLoader.loadPackages(packageLoader.getOgre(), false);
 
 injectRendererModule({
-	script: path.join(__dirname, "renderer.js"),
+	script: path.join(__dirname, "renderer", "index.js"),
 });
 
 // const packagesPath = packageLoader.getPackagesPath();

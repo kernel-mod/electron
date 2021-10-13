@@ -8,6 +8,14 @@ class EventListener {
 		this.#listeners[eventName].push(listener);
 	}
 
+	once(eventName: string, listener: (...args: any[]) => any) {
+		const onceListener = (...args: any[]) => {
+			listener(...args);
+			this.off(eventName, onceListener);
+		};
+		this.on(eventName, onceListener);
+	}
+
 	off(eventName: string, listener: (...args: any[]) => any) {
 		if (this.#listeners[eventName] == undefined) {
 			return;

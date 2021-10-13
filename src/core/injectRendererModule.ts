@@ -21,7 +21,7 @@ export default async function injectRendererModule({
 		{
 			type: "module",
 			async: (!sync).toString(),
-			src: `import${sync ? "-sync" : ""}://${resolve(script)}`,
+			src: `kernel${sync ? "-sync" : ""}://${resolve(script)}`,
 		}
 	);
 
