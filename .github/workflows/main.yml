@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: electron
+          
+      - uses: actions/checkout@v2
+        with:
+          repository: kernel-mod/browser
+          path: browser
+          
+      - uses: actions/cache@v2
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-
+            
+      - uses: pnpm/action-setup@v2.0.1   
+        with:  
+          version: 6.20.1
+          
+      - run: |
+          cd browser
+          pnpm i
+          cd ../electron
+          pnpm i
+          pnpm run build
+
+      - name: Release
+        uses: softprops/action-gh-release@v0.1.13
+        with:
+          name: ${{ github.sha }}
+          tag_name: ${{ github.ref }}
+          body: ${{ join(github.event.commits.*.message, '\n') }}
+          files: "electron/dist/kernel.asar"
