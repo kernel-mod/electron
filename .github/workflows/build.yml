@@ -1,0 +1,38 @@
+name: Build
+
+on:
+  pull_request:
+    branches: [ master ]
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: electron
+          
+      - uses: actions/checkout@v2
+        with:
+          repository: kernel-mod/browser
+          path: browser
+          
+      - uses: actions/cache@v2
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-
+            
+      - uses: pnpm/action-setup@v2.0.1   
+        with:  
+          version: 6.20.1
+          
+      - name: Build ASAR
+        run: |
+          cd browser
+          pnpm i
+          cd ../electron
+          pnpm i
+          pnpm run build
