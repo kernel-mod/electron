@@ -3,7 +3,7 @@ import { ipcMain, session } from "electron";
 // Set up the IPC to send the data from the InjectedBrowserWindow to the preload.
 ipcMain.on("KERNEL_WINDOW_DATA", (event) => {
 	// @ts-ignore
-	event.returnValue = event.sender.kernelWindowData;
+	event.returnValue = event.sender.$kernelWindowData;
 });
 
 const senderHooks = new Map();

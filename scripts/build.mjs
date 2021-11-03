@@ -62,10 +62,6 @@ for (const file of sourceFiles) {
 					compress: false, // TODO: Figure out why this breaks package loading in main.
 					mangle: production,
 				},
-				// paths: {
-				// 	"@kernel": ["../core/src/index.js"],
-				// 	"@kernel/*": ["../core/src/*"],
-				// },
 			},
 			module: {
 				type: "commonjs",

@@ -3,9 +3,4 @@ import processLocation from "./processLocation";
 import memoize from "./memoize";
 import injectRendererModule from "./injectRendererModule";
 
-export default {
-	packageLoader,
-	processLocation,
-	memoize,
-	injectRendererModule,
-};
+export { packageLoader, processLocation, memoize, injectRendererModule };

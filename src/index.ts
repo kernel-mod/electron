@@ -1,3 +1,6 @@
+// Set up the require patch for aliases.
+require("./alias");
+
 import { app, protocol } from "electron";
 import * as packageLoader from "./core/packageLoader";
 
@@ -5,6 +8,7 @@ console.time("Loaded before app ready in");
 
 console.log("Loading Kernel.");
 
+// Register the protocol schemes.
 protocol.registerSchemesAsPrivileged([
 	{ scheme: "kernel", privileges: { bypassCSP: true } },
 	{
@@ -16,7 +20,7 @@ protocol.registerSchemesAsPrivileged([
 packageLoader.loadPackages(packageLoader.getOgre(), false);
 
 // Replace Electron's BrowserWindow with our own.
-require("./patchBrowserWindow");
+require("@kernel/core/BrowserWindowPatcher");
 
 console.timeEnd("Loaded before app ready in");
 

@@ -3,7 +3,11 @@
 		"module": "ESNext",
 		"target": "ES2015",
 		"moduleResolution": "node",
-		"allowSyntheticDefaultImports": true
+		"allowSyntheticDefaultImports": true,
+		"paths": {
+			"@kernel": ["./src"],
+			"@kernel/ipc": ["./src/ipc"]
+		}
 	},
 	"include": ["src/**/*"]
 }
