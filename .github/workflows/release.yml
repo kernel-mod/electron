@@ -1,4 +1,4 @@
-name: CI
+name: Release
 
 on:
   push:
@@ -6,9 +6,27 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     steps:
+      - name: Newline
+        run: |
+          NEWLINE=$(cat << EOF
+          EOF)
+          NEWLINE="${NEWLINE//'%'/'%25'}"
+          NEWLINE="${NEWLINE//$'\n'/'%0A'}"
+          NEWLINE="${NEWLINE//$'\r'/'%0D'}"
+          echo "::set-output name=content::$NEWLINE"
+        id: newline
+        
+      - name: Current Date
+        run: echo "::set-output name=content::$(date +'%Y-%m-%d %H:%M:%S')"
+        id: now-name
+
+      - name: Current Date
+        run: echo "::set-output name=content::$(date +'%Y-%m-%d-%H-%M-%S')"
+        id: now-tag
+        
       - uses: actions/checkout@v2
         with:
           path: electron
@@ -29,17 +47,18 @@ jobs:
         with:  
           version: 6.20.1
           
-      - run: |
+      - name: Build ASAR
+        run: |
           cd browser
           pnpm i
           cd ../electron
           pnpm i
           pnpm run build
-
+        
       - name: Release
         uses: softprops/action-gh-release@v0.1.13
         with:
-          name: ${{ github.sha }}
-          tag_name: ${{ github.ref }}
-          body: ${{ join(github.event.commits.*.message, '\n') }}
+          name: ${{ steps.now-name.outputs.content }}
+          tag_name: ${{ steps.now-tag.outputs.content }}
+          body: ${{ join(github.event.commits.*.message, steps.newline.outputs.content) }}
           files: "electron/dist/kernel.asar"
