@@ -56,16 +56,12 @@ jobs:
           pnpm run build
 
       - name: Download Latest Release
-        # You may pin to the exact commit or the version.
-        # uses: robinraju/release-downloader@95181030e3b4d574d027e8f4bb7d97fc62331c35
         uses: robinraju/release-downloader@v1.2
         with:
-          # A flag to choose between latest release and remaining releases
+          repository: ${{ github.repository }}
           latest: true
-          # Name of the file to download (use '*' to download all assets other than tarball or zipball)
           fileName: '*'
           out-file-path: './latest-release'
-          # Github token to access private repos
           token: ${{ secrets.GITHUB_TOKEN }}
           
       - if: hashFiles('latest-release/*') != hashFiles('electron/dist/*')
