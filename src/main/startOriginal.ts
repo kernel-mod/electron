@@ -1,6 +1,9 @@
 import path from "path";
 import electron from "electron";
 import fs from "fs";
+import Logger from "#kernel/core/Logger";
+
+Logger.log("Starting original app.");
 
 // We can get the path of the real injection point like this.
 const basePath = path.join(path.dirname(require.main.filename), "..");

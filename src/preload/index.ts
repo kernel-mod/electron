@@ -1,12 +1,12 @@
+// Set up the require patch for aliases.
+import "../main/alias";
+
 import { ipcRenderer } from "electron";
 import path from "path";
-import injectRendererModule from "../core/injectRendererModule";
-import * as packageLoader from "../core/packageLoader";
+import injectRendererModule from "#kernel/core/injectRendererModule";
+import * as packageLoader from "#kernel/core/packageLoader";
 
 ipcRenderer.sendSync("KERNEL_SETUP_RENDERER_HOOK");
-
-// Set up the require patch for aliases.
-require("./alias");
 
 // Initialize the renderer bridge.
 require("./renderer/bridge/index.js");

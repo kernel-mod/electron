@@ -41,42 +41,40 @@ const sourceFiles = (
 
 for (const file of sourceFiles) {
 	const code = fs.readFileSync(file.input, "utf8");
-	swc
-		.transform(code, {
-			// Some options cannot be specified in .swcrc
-			filename: path.basename(file.input),
-			jsc: {
-				parser: {
-					syntax: "typescript",
-					tsx: true,
-					decorators: true,
-					dynamicImport: true,
-					importAssertions: true,
-				},
-				transform: {},
-				target: "es2016",
-				loose: true,
-				externalHelpers: false,
-				keepClassNames: true,
-				minify: {
-					compress: false, // TODO: Figure out why this breaks package loading in main.
-					mangle: production,
-				},
+	swc.transform(code, {
+		// Some options cannot be specified in .swcrc
+		filename: path.basename(file.input),
+		jsc: {
+			parser: {
+				syntax: "typescript",
+				tsx: true,
+				decorators: true,
+				dynamicImport: true,
+				importAssertions: true,
 			},
-			module: {
-				type: "commonjs",
-				strict: false,
-				strictMode: true,
-				lazy: false,
-				noInterop: false,
+			transform: {},
+			target: "es2017",
+			loose: true,
+			externalHelpers: false,
+			keepClassNames: true,
+			minify: {
+				compress: false, // TODO: Figure out why this breaks package loading in main.
+				mangle: production,
 			},
-			minify: production,
-			sourceMaps: "inline",
-		})
-		.then((output) => {
-			fs.ensureFileSync(file.output);
-			fs.writeFile(file.output, output.code);
-		});
+		},
+		module: {
+			type: "commonjs",
+			strict: false,
+			strictMode: true,
+			lazy: false,
+			noInterop: false,
+		},
+		minify: production,
+		sourceMaps: "inline",
+	}).then((output) => {
+		fs.ensureFileSync(file.output);
+		fs.writeFile(file.output, output.code);
+	});
 }
 
 // Save this for possibly using it in the future.
@@ -108,9 +106,11 @@ await new Promise((resolve) =>
 		}
 	)
 );
+
+await fs.ensureDir(path.join(baseDir, "transpiled", "renderer"));
 await fs.copyFile(
 	path.join(baseDir, "..", "browser", "dist", "index.js"),
-	path.join(baseDir, "transpiled", "preload", "renderer", "index.js")
+	path.join(baseDir, "transpiled", "renderer", "index.js")
 );
 
 console.time("Successfully packed");

@@ -1,13 +1,14 @@
 {
 	"compilerOptions": {
-		"module": "ESNext",
-		"target": "ES2015",
+		"module": "CommonJS",
+		"target": "ES2017",
 		"moduleResolution": "node",
 		"allowSyntheticDefaultImports": true,
+		"baseUrl": "src",
 		"paths": {
-			"@kernel": ["./src"],
-			"@kernel/ipc": ["./src/ipc"]
-		}
+			"#kernel/*": ["*"]
+		},
+		"outDir": "./transpiled"
 	},
 	"include": ["src/**/*"]
 }
