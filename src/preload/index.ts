@@ -1,4 +1,4 @@
-import { contextIsolation, ipcRenderer } from "electron";
+import { contextBridge, ipcRenderer } from "electron";
 import path from "path";
 import injectRendererModule from "../core/injectRendererModule";
 import * as packageLoader from "../core/packageLoader";
