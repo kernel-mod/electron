@@ -33,7 +33,7 @@ const preloadData = ipcRenderer.sendSync("KERNEL_WINDOW_DATA");
 
 // If context isolation is off, this should be patched to make sure everything complies.
 if (!preloadData?.contextIsolation) {
-	contextIsolation.exposeInMainWorld = (key, value) => window[key] = value; 
+	contextBridge.exposeInMainWorld = (key, value) => window[key] = value; 
 }
 
 if (preloadData?.originalPreload) {
