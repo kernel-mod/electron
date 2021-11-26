@@ -20,10 +20,6 @@ const api = {
 	importProtocol: "kernel",
 };
 
-if (!!preloadData.windowOptions.webPreferences?.contextIsolation) {
-	contextBridge.exposeInMainWorld("kernel", api);
-} else {
-	window.kernel = api;
-}
+contextBridge.exposeInMainWorld("kernel", api);
 
 export default api;
