@@ -34,7 +34,7 @@ const preloadData = ipcRenderer.sendSync("KERNEL_WINDOW_DATA");
 // If context isolation is off, this should be patched to make sure everything complies.
 if (!!preloadData?.windowOptions?.contextIsolation) {
 	contextBridge.exposeInMainWorld = function (key, value) {
-		console.log("aaaa", JSON.stringify(arguments));
+		console.log("kerNel", JSON.stringify(arguments));
 
 		window[key] = value;
 	};
