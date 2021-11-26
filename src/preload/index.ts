@@ -32,8 +32,12 @@ injectRendererModule({
 const preloadData = ipcRenderer.sendSync("KERNEL_WINDOW_DATA");
 
 // If context isolation is off, this should be patched to make sure everything complies.
-if (!preloadData?.contextIsolation) {
-	contextBridge.exposeInMainWorld = (key, value) => window[key] = value; 
+if (!!preloadData?.windowOptions?.contextIsolation) {
+	contextBridge.exposeInMainWorld = function (key, value) {
+		console.log("aaaa", JSON.stringify(arguments));
+
+		window[key] = value;
+	};
 }
 
 if (preloadData?.originalPreload) {
