@@ -36,8 +36,6 @@ const electronProxy = new Proxy(electron, {
 							windowOptions: options,
 						};
 
-						window.webContents.openDevTools();
-
 						return window;
 					},
 				});
