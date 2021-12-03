@@ -1,7 +1,7 @@
 import getPackages from "./getPackages";
 import Ogre from "./Ogre";
 import PackageInfo from "./PackageInfo";
-import processLocation from "../processLocation";
+import processLocation from "../utils/processLocation";
 import { ipcMain, ipcRenderer } from "electron";
 
 switch (processLocation()) {

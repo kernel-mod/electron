@@ -9,7 +9,7 @@ import loadedPackages from "./loadedPackages";
 import startPackage from "./startPackage";
 import stopPackage from "./stopPackage";
 
-import processLocation from "../processLocation";
+import processLocation from "../utils/processLocation";
 
 export {
 	getPackages,

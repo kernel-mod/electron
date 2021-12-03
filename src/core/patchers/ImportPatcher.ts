@@ -1,5 +1,3 @@
-// TODO: Also alias for renderer.
-
 import path from "path";
 import Module from "module";
 
@@ -12,7 +10,7 @@ export const patches: {
 	[id: string]: PatchFunction;
 } = {};
 
-const patchedRequire: NodeJS.Require = Object.assign(function (
+export const patchedRequire: NodeJS.Require = Object.assign(function (
 	...args: string[]
 ) {
 	const moduleID = path.join(...args);

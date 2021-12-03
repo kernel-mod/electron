@@ -2,7 +2,7 @@ import path from "path";
 import getPackages from "./getPackages";
 import loadedPackages from "./loadedPackages";
 import fs from "fs";
-import processLocation from "../processLocation";
+import processLocation from "../utils/processLocation";
 import startPackage from "./startPackage";
 import _startPackage from "./_startPackage";
 

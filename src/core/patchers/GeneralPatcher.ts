@@ -1,52 +1,18 @@
-function uuid(dontMatch: (uuid: string) => boolean): string {
-	let uuid: string;
-	let failed = false;
-	do {
-		if (failed) console.count("You are astronomically unlucky.");
-		uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-			const r = (Math.random() * 16) | 0;
-			const v = c === "x" ? r : (r & 0x3) | 0x8;
-			return v.toString(16);
-		});
-		failed = true;
-	} while (dontMatch(uuid));
-	return uuid;
-}
+import uuid from "../utils/uuid";
 
-function isObject(item: any): boolean {
-	return item && typeof item === "object" && !Array.isArray(item);
-}
-
-function mergeDeep<Type extends object | any[]>(
-	target: Type,
-	source: Type
-): Type {
+function mergeDeep(target: object, source: object): object {
 	let output = Object.assign({}, target);
 	if (isObject(target) && isObject(source)) {
-		Object.keys(source).forEach((key) => {
+		for (const key in source) {
 			if (isObject(source[key])) {
 				if (!(key in target)) Object.assign(output, { [key]: source[key] });
 				else output[key] = mergeDeep(target[key], source[key]);
 			} else {
 				Object.assign(output, { [key]: source[key] });
 			}
-		});
+		}
 	}
 	return output;
-}
-
-function deepFreezeClone<Type extends object | any[]>(
-	obj: Type
-): Readonly<Type> {
-	const frozen: object = Array.isArray(obj) ? [...obj] : { ...obj };
-	for (const [key, value] of Object.entries(obj)) {
-		if (typeof obj[key] === "object") {
-			frozen[key] = deepFreezeClone(value);
-			continue;
-		}
-		frozen[key] = value;
-	}
-	return Object.freeze(frozen as Type);
 }
 
 type AnyFunction = (...any: any) => any;

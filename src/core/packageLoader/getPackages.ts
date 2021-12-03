@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import PackageInfo from "./PackageInfo";
 import getPackagesPath from "./getPackagesPath";
-import processLocation from "../processLocation";
+import processLocation from "../utils/processLocation";
 import { ipcMain, ipcRenderer } from "electron";
 import loadedPackages from "./loadedPackages";
 

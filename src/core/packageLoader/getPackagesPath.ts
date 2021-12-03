@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
-import memoize from "../memoize";
-import processLocation from "../processLocation";
+import memoize from "../utils/memoize";
+import processLocation from "../utils/processLocation";
 import { ipcMain, ipcRenderer } from "electron";
 
 switch (processLocation()) {

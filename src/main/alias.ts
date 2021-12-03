@@ -1,7 +1,7 @@
-import * as requirePatcher from "../core/patchers/RequirePatcher";
+import * as importPatcher from "../core/patchers/ImportPatcher";
 import path from "path";
 
-requirePatcher.patch("kernel-aliases", (id) => {
+importPatcher.patch("kernel-aliases", (id) => {
 	if (id.startsWith("#kernel")) {
 		return require(path.join(__dirname, "..", id.replace(/^#kernel\/?/, "")));
 	}
