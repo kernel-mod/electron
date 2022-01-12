@@ -3,7 +3,7 @@ import "./alias";
 
 import { app } from "electron";
 import * as packageLoader from "#kernel/core/packageLoader";
-import BrowserWindowPatcher from "#kernel/core/patchers/BrowserWindowPatcher";
+import "#kernel/core/patchers/BrowserWindowPatcher";
 import Logger from "#kernel/core/Logger";
 
 export default (options: { startOriginal?: boolean } = {}) => {
@@ -16,9 +16,6 @@ export default (options: { startOriginal?: boolean } = {}) => {
 	require("./registerProtocols");
 
 	packageLoader.loadPackages(packageLoader.getOgre(), false);
-
-	// Replace Electron's BrowserWindow with our own.
-	BrowserWindowPatcher;
 
 	app.on("ready", async () => {
 		Logger.time("Loaded after app ready in");

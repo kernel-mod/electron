@@ -12,28 +12,20 @@ protocol.registerSchemesAsPrivileged([
 ]);
 
 app.on("ready", () => {
-	protocol.registerFileProtocol("kernel", (request, callback) => {
-		const url = request.url.substr(8);
-		callback({ path: url });
+	protocol.registerBufferProtocol("kernel", (request, callback) => {
+		const url = request.url.substring(9);
+		const patchResult = patchedRequire(url, true);
+		callback({
+			mimeType: "text/javascript",
+			data: Buffer.from(patchResult ?? fs.readFileSync(url, "utf8"), "utf-8"),
+		});
 	});
-	protocol.registerFileProtocol("kernel-sync", (request, callback) => {
-		const url = request.url.substr(12);
-		callback({ path: url });
+	protocol.registerBufferProtocol("kernel-sync", (request, callback) => {
+		const url = request.url.substring(14);
+		const patchResult = patchedRequire(url, true);
+		callback({
+			mimeType: "text/javascript",
+			data: Buffer.from(patchResult ?? fs.readFileSync(url, "utf8"), "utf-8"),
+		});
 	});
-	// protocol.registerStringProtocol("kernel", (request, callback) => {
-	// 	const url = request.url.substr(9);
-	// 	const patchResult = patchedRequire(url);
-	// 	callback({
-	// 		mimeType: "text/javascript",
-	// 		data: patchResult ?? fs.readFileSync(url, "utf8"),
-	// 	});
-	// });
-	// protocol.registerStringProtocol("kernel-sync", (request, callback) => {
-	// 	const url = request.url.substr(13);
-	// 	const patchResult = patchedRequire(url);
-	// 	callback({
-	// 		mimeType: "text/javascript",
-	// 		data: patchResult ?? fs.readFileSync(url, "utf8"),
-	// 	});
-	// });
 });

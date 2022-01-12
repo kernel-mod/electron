@@ -20,10 +20,12 @@ export default async function injectRendererModule({
 		document.createElement("script"),
 		{
 			type: "module",
-			async: (!sync).toString(),
 			src: `kernel${sync ? "-sync" : ""}://${resolve(script)}`,
 		}
 	);
+	if (!sync) {
+		scriptElement.setAttribute("async", "true");
+	}
 
 	if (onload) scriptElement.addEventListener("load", onload);
 	while (!document.documentElement) {
@@ -31,5 +33,5 @@ export default async function injectRendererModule({
 	}
 
 	document.documentElement.appendChild(scriptElement);
-	scriptElement.remove();
+	// scriptElement.remove();
 }

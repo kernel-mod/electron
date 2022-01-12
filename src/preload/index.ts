@@ -4,6 +4,7 @@ import { ipcRenderer, contextBridge } from "electron";
 import path from "path";
 import injectRendererModule from "#kernel/core/utils/injectRendererModule";
 import * as packageLoader from "#kernel/core/packageLoader";
+import Logger from "#kernel/core/Logger";
 
 ipcRenderer.sendSync("KERNEL_SETUP_RENDERER_HOOK");
 
@@ -22,10 +23,13 @@ require("#kernel/preload/bridge");
 
 packageLoader.loadPackages(packageLoader.getOgre(), false);
 
+Logger.log(path.join(__dirname, "..", "renderer", "index.js"));
 injectRendererModule({
 	script: path.join(__dirname, "..", "renderer", "index.js"),
+	sync: true,
 });
 
 if (preloadData.originalPreload) {
+	Logger.log("Running original preload.");
 	require(preloadData.originalPreload);
 }

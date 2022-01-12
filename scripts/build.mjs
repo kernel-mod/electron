@@ -41,40 +41,42 @@ const sourceFiles = (
 
 for (const file of sourceFiles) {
 	const code = fs.readFileSync(file.input, "utf8");
-	swc.transform(code, {
-		// Some options cannot be specified in .swcrc
-		filename: path.basename(file.input),
-		jsc: {
-			parser: {
-				syntax: "typescript",
-				tsx: true,
-				decorators: true,
-				dynamicImport: true,
-				importAssertions: true,
+	swc
+		.transform(code, {
+			// Some options cannot be specified in .swcrc
+			filename: path.basename(file.input),
+			jsc: {
+				parser: {
+					syntax: "typescript",
+					tsx: true,
+					decorators: true,
+					dynamicImport: true,
+					importAssertions: true,
+				},
+				transform: {},
+				target: "es2017",
+				loose: true,
+				externalHelpers: false,
+				keepClassNames: true,
+				minify: {
+					compress: false, // TODO: Figure out why this breaks package loading in main.
+					mangle: production,
+				},
 			},
-			transform: {},
-			target: "es2017",
-			loose: true,
-			externalHelpers: false,
-			keepClassNames: true,
-			minify: {
-				compress: false, // TODO: Figure out why this breaks package loading in main.
-				mangle: production,
+			module: {
+				type: "commonjs",
+				strict: false,
+				strictMode: true,
+				lazy: false,
+				noInterop: false,
 			},
-		},
-		module: {
-			type: "commonjs",
-			strict: false,
-			strictMode: true,
-			lazy: false,
-			noInterop: false,
-		},
-		minify: production,
-		sourceMaps: "inline",
-	}).then((output) => {
-		fs.ensureFileSync(file.output);
-		fs.writeFile(file.output, output.code);
-	});
+			minify: production,
+			sourceMaps: "inline",
+		})
+		.then((output) => {
+			fs.ensureFileSync(file.output);
+			fs.writeFile(file.output, output.code);
+		});
 }
 
 // Save this for possibly using it in the future.

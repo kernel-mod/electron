@@ -8,7 +8,7 @@ ipcMain.on("KERNEL_WINDOW_DATA", (event) => {
 });
 
 const senderHooks = new Map();
-
+let loaded = false;
 session.defaultSession.webRequest.onBeforeRequest(
 	{ urls: ["*://*/*.js", "*://*/*.html"] },
 	(details, callback) => {
@@ -21,8 +21,8 @@ session.defaultSession.webRequest.onBeforeRequest(
 		}
 	}
 );
-
 ipcMain.on("KERNEL_SETUP_RENDERER_HOOK", (event) => {
+	if (loaded) return (event.returnValue = true);
 	const reqs = [];
 	const finish = () => {
 		reqs.forEach((r) => {
@@ -38,6 +38,9 @@ ipcMain.on("KERNEL_SETUP_RENDERER_HOOK", (event) => {
 });
 
 ipcMain.on("KERNEL_FINISH_RENDERER_HOOK", (event) => {
-	senderHooks.get(event.sender.id).finish();
+	// No idea what I changed but it now sometimes loads before these hooks are set up.
+	// I mean I guess that's good because it means it's fast, but like. What.
+	loaded = true;
+	senderHooks.get(event.sender.id)?.finish();
 	event.returnValue = true;
 });
