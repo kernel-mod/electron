@@ -33,5 +33,5 @@ export default async function injectRendererModule({
 	}
 
 	document.documentElement.appendChild(scriptElement);
-	// scriptElement.remove();
+	scriptElement.remove();
 }
