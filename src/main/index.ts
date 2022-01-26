@@ -23,8 +23,6 @@ export default (options: { startOriginal?: boolean } = {}) => {
 		await Promise.all([
 			// Set up IPC.
 			import("./ipc"),
-			// Remove CSP.
-			import("./removeCSP"),
 		]).then(() => {
 			Logger.timeEnd("Loaded after app ready in");
 		});

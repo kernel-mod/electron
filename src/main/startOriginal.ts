@@ -1,6 +1,7 @@
 import path from "path";
 import electron from "electron";
 import fs from "fs";
+import Module from "module";
 import Logger from "#kernel/core/Logger";
 
 Logger.log("Starting original app.");
@@ -27,5 +28,8 @@ electron.app.setAppPath?.(originalPath);
 electron.app.name = originalPackage.name;
 
 // Load the app's original code.
-// Run with require to make sure it doesn't await in main process because that can be bad.
-require(startPath);
+// Run without import() to make sure it doesn't await in main process because that can be bad.
+// Module._load(file, null, true) is used instead of require() because it lets you load the file as if it was the first file being run in the Node environment.
+// Using require could result in things breaking if the app ever uses require.main.
+// @ts-ignore This does exist, it's just not typed.
+Module._load(startPath, null, true);

@@ -1,5 +1,4 @@
 import { ipcMain, session } from "electron";
-import { kernelPreloadDataSymbol } from "#kernel/core/patchers/ElectronPatcher";
 
 // Set up the IPC to send the data from the InjectedBrowserWindow to the preload.
 ipcMain.on("KERNEL_WINDOW_DATA", (event) => {

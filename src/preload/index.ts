@@ -30,6 +30,6 @@ injectRendererModule({
 });
 
 if (preloadData.originalPreload) {
-	Logger.log("Running original preload.");
+	Logger.log("Running original preload:", preloadData.originalPreload);
 	require(preloadData.originalPreload);
 }
