@@ -12,7 +12,7 @@ Get the [CLI installer](https://github.com/kernel-mod/installer-cli) and run it.
 
 This will be easier _eventually_, don't worry. But making the mod more functional and easier for developers is a high priority.
 
-First of all, you need to download Kernel. Currently you need to build Kernel yourself because I'm too lazy to write a CI to build it for you for now.
+First of all, you need to download Kernel. You can either [download the latest precompiled build](https://github.com/kernel-mod/electron/releases), or you can build it by yourself (more info later on the readme)
 
 Every Electron app (that I've seen so far) has a folder where the Electron binary is stored. This main folder is usually in `AppData/Local` on Windows. In that folder there's another folder usually in `resources` called `app`.
 
