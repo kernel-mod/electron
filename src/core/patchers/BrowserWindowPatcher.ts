@@ -9,19 +9,27 @@ export type PatchFunction = (
 ) => object;
 export type UnpatchFunction = () => boolean;
 
+declare type KernelWebContents = electron.WebContents & {
+	kernelWindowData?: {
+		originalPreload: string;
+		windowOptions: electron.BrowserViewConstructorOptions;
+	}
+}
+
 export const patches: {
 	[id: string]: PatchFunction;
 } = {};
 
 export const originalBrowserWindow = electron.BrowserWindow;
 
+let BrowserWindowProxy = null;
 const preloadPath = path.join(__dirname, "..", "..", "preload");
 
 patchElectron("BrowserWindow", (target, property) => {
 	if (property === "BrowserWindow") {
 		// Create a Proxy over Electron that returns the PatchedBrowserWindow if BrowserWindow is called.
 		// Can't just proxy the BrowserWindow class directly because it's a getter.
-		return new Proxy(target.BrowserWindow, {
+		BrowserWindowProxy ??= new Proxy(target.BrowserWindow, {
 			construct(BrowserWindowTarget, args) {
 				const [options, ...rest] = args;
 
@@ -52,7 +60,7 @@ patchElectron("BrowserWindow", (target, property) => {
 
 				// Put the location and the original preload in a place the main IPC can easily reach.
 				// @ts-ignore
-				window.webContents.kernelWindowData = {
+				(window.webContents as KernelWebContents).kernelWindowData = {
 					originalPreload: originalPreload,
 					windowOptions: options,
 				};
@@ -60,6 +68,8 @@ patchElectron("BrowserWindow", (target, property) => {
 				return window;
 			},
 		});
+
+		return BrowserWindowProxy;
 	}
 });
 

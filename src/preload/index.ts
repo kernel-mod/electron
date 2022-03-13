@@ -5,6 +5,7 @@ import path from "path";
 import injectRendererModule from "#kernel/core/utils/injectRendererModule";
 import * as packageLoader from "#kernel/core/packageLoader";
 import Logger from "#kernel/core/Logger";
+import getWebPreference from "#kernel/core/utils/getWebPreference";
 
 ipcRenderer.sendSync("KERNEL_SETUP_RENDERER_HOOK");
 
@@ -12,7 +13,10 @@ ipcRenderer.sendSync("KERNEL_SETUP_RENDERER_HOOK");
 const preloadData = ipcRenderer.sendSync("KERNEL_WINDOW_DATA");
 
 // If context isolation is off, this should be patched to make sure everything complies.
-if (!preloadData.windowOptions.webPreferences.contextIsolation) {
+const hasContextIsolation = getWebPreference("contextIsolation");
+
+Logger.log("ContextIsolation:", hasContextIsolation);
+if (!hasContextIsolation) {
 	contextBridge.exposeInMainWorld = function (key, value) {
 		window[key] = value;
 	};
@@ -29,7 +33,7 @@ injectRendererModule({
 	sync: true,
 });
 
-if (preloadData.originalPreload) {
+if (preloadData?.originalPreload) {
 	Logger.log("Running original preload:", preloadData.originalPreload);
 	require(preloadData.originalPreload);
 }
