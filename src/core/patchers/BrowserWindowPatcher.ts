@@ -59,7 +59,6 @@ patchElectron("BrowserWindow", (target, property) => {
 				const window = new BrowserWindowTarget(options, ...rest);
 
 				// Put the location and the original preload in a place the main IPC can easily reach.
-				// @ts-ignore
 				(window.webContents as KernelWebContents).kernelWindowData = {
 					originalPreload: originalPreload,
 					windowOptions: options,
