@@ -6,11 +6,11 @@ console.time("Loaded before app ready in");
 console.log("Loading Kernel.");
 
 protocol.registerSchemesAsPrivileged([
-	{ scheme: "kernel", privileges: { bypassCSP: true } },
-	{
-		scheme: "kernel-sync",
-		privileges: { bypassCSP: true },
-	},
+    { scheme: "kernel", privileges: { bypassCSP: true } },
+    {
+        scheme: "kernel-sync",
+        privileges: { bypassCSP: true },
+    },
 ]);
 
 packageLoader.loadPackages(packageLoader.getOgre(), false);
@@ -21,25 +21,25 @@ require("./patchBrowserWindow");
 console.timeEnd("Loaded before app ready in");
 
 app.on("ready", async () => {
-	console.time("Loaded after app ready in");
+    console.time("Loaded after app ready in");
 
-	protocol.registerFileProtocol("kernel", (request, callback) => {
-		const url = request.url.substr(8);
-		callback({ path: url });
-	});
-	protocol.registerFileProtocol("kernel-sync", (request, callback) => {
-		const url = request.url.substr(12);
-		callback({ path: url });
-	});
+    protocol.registerFileProtocol("kernel", (request, callback) => {
+        const url = request.url.substr(8);
+        callback({ path: url });
+    });
+    protocol.registerFileProtocol("kernel-sync", (request, callback) => {
+        const url = request.url.substr(12);
+        callback({ path: url });
+    });
 
-	await Promise.all([
-		// Set up IPC.
-		import("./ipc"),
-		// Remove CSP.
-		import("./removeCSP"),
-	]).then(() => {
-		console.timeEnd("Loaded after app ready in");
-	});
+    await Promise.all([
+        // Set up IPC.
+        import("./ipc"),
+        // Remove CSP.
+        import("./removeCSP"),
+    ]).then(() => {
+        console.timeEnd("Loaded after app ready in");
+    });
 });
 
 // Start the app.
