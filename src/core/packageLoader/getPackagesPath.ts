@@ -16,7 +16,7 @@ switch (processLocation()) {
 function getPackagesPath(): string {
 	switch (processLocation()) {
 		case "MAIN":
-			const kernelPath = [__dirname, "..", "..", ".."]; //back out of ASAR
+			const origPath = kernelPath = [__dirname, "..", "..", ".."]; //back out of ASAR
 			
 			while (
 				!fs.existsSync(path.resolve(...kernelPath, "packages")) ||
@@ -25,10 +25,16 @@ function getPackagesPath(): string {
 			) {
 			  kernelPath.push("..");
 			}
-
-			const packagesPath = path.resolve(...kernelPath, "packages");
 			
-			// TODO: when i'm on a better code editor restore automatic package folder creation
+			let packagesPath = path.resolve(...kernelPath, "packages");
+			
+			if(!fs.existsSync(packagesPath)) {
+				packagesPath = path.resolve(...origPath, "packages");
+				console.log(
+					`No package directory found. Creating one at "${packagesPath}"`
+				);
+				fs.mkdirSync(packagesPath)
+			}
 	
 			return packagesPath;
 
