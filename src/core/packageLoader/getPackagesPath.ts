@@ -16,36 +16,22 @@ switch (processLocation()) {
 function getPackagesPath(): string {
 	switch (processLocation()) {
 		case "MAIN":
-			let lastPath = "";
-			const kernelPath = path.join(__dirname, "..", "..", "..");
-			let currentPath = kernelPath;
-			let packagesPath = path.join(currentPath, "packages");
-
-			// Weird thing???
-			// No idea if this is still needed but I'm not risking removing it.
-			"";
-
+			const kernelPath = [__dirname, "..", "..", ".."]; //back out of ASAR
+			
 			while (
-				currentPath &&
-				currentPath !== lastPath &&
-				!fs.existsSync(packagesPath)
+				!fs.existsSync(path.resolve(...kernelPath, "packages")) ||
+				!path.resolve(...kernelPath) === "/"  ||
+				!path.resolve(...kernelPath) === "C:"
 			) {
-				lastPath = currentPath;
-				currentPath = path.join(currentPath, "..");
-				packagesPath = path.join(currentPath, "packages");
+			  kernelPath.push("..");
 			}
 
-			// If it wasn't found, create the "packages" folder.
-			if (!fs.existsSync(packagesPath)) {
-				const createdPackagesPath = path.join(kernelPath, "packages");
-				console.log(
-					`No packages directory found. Creating one at "${createdPackagesPath}".`
-				);
-				fs.mkdirSync(createdPackagesPath);
-				return createdPackagesPath;
-			}
-
+			const packagesPath = path.resolve(...kernelPath, "packages");
+			
+			// TODO: when i'm on a better code editor restore automatic package folder creation
+	
 			return packagesPath;
+
 		case "PRELOAD":
 			return ipcRenderer.sendSync("KERNEL_getPackagesPath");
 	}
