@@ -16,8 +16,9 @@ switch (processLocation()) {
 function getPackagesPath(): string {
 	switch (processLocation()) {
 		case "MAIN":
-			const origPath = kernelPath = [__dirname, "..", "..", ".."]; //back out of ASAR
-			
+			const origPath = [__dirname, "..", "..", ".."]; //back out of ASAR
+			const kernelPath = origPath
+
 			while (
 				!fs.existsSync(path.resolve(...kernelPath, "packages")) ||
 				!path.resolve(...kernelPath) === "/"  ||
