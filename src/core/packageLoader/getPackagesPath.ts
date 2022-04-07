@@ -17,7 +17,7 @@ function getPackagesPath(): string {
 	switch (processLocation()) {
 		case "MAIN":
 			const origPath = [__dirname, "..", "..", ".."]; //back out of ASAR
-			const kernelPath = origPath
+			const kernelPath = origPath;
 
 			while (
 				!fs.existsSync(path.resolve(...kernelPath, "packages")) ||
@@ -34,7 +34,7 @@ function getPackagesPath(): string {
 				console.log(
 					`No package directory found. Creating one at "${packagesPath}"`
 				);
-				fs.mkdirSync(packagesPath)
+				fs.mkdirSync(packagesPath);
 			}
 	
 			return packagesPath;
