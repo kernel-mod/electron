@@ -1,6 +1,5 @@
-import electron from "electron";
+import electron, { BrowserWindow } from "electron";
 import path from "path";
-import { patch as patchElectron } from "./ElectronPatcher";
 
 export type PatchFunction = (
 	target: typeof electron.BrowserWindow,
@@ -9,67 +8,52 @@ export type PatchFunction = (
 ) => object;
 export type UnpatchFunction = () => boolean;
 
-declare type KernelWebContents = electron.WebContents & {
-	kernelWindowData?: {
-		originalPreload: string;
-		windowOptions: electron.BrowserViewConstructorOptions;
-	}
-}
-
 export const patches: {
 	[id: string]: PatchFunction;
 } = {};
 
-export const originalBrowserWindow = electron.BrowserWindow;
+export const originalBrowserWindow = BrowserWindow;
 
-let BrowserWindowProxy = null;
 const preloadPath = path.join(__dirname, "..", "..", "preload");
 
-patchElectron("BrowserWindow", (target, property) => {
-	if (property === "BrowserWindow") {
-		// Create a Proxy over Electron that returns the PatchedBrowserWindow if BrowserWindow is called.
-		// Can't just proxy the BrowserWindow class directly because it's a getter.
-		BrowserWindowProxy ??= new Proxy(target.BrowserWindow, {
-			construct(BrowserWindowTarget, args) {
-				const [options, ...rest] = args;
+// Extending the class does not work.
+export const ProxiedBrowserWindow = new Proxy(electron.BrowserWindow, {
+	construct(target, args) {
+		const options: electron.BrowserWindowConstructorOptions = args[0];
 
-				for (const [id, func] of Object.entries(patches)) {
-					try {
-						// @ts-ignore arguments is iterable.
-						const override = func.apply(BrowserWindowTarget, arguments);
-						if (override != null) return override;
-					} catch (e) {
-						console.error(`Failed to patch ${id}:`, e);
-					}
-				}
+		for (const [id, func] of Object.entries(patches)) {
+			try {
+				const override = func.call(target, options);
+				if (override != null) return override;
+			} catch (e) {
+				console.error(`Failed to patch ${id}:`, e);
+			}
+		}
 
-				const originalPreload = options.webPreferences.preload;
+		const originalPreload = options.webPreferences.preload;
 
-				options.webPreferences.preload = preloadPath;
+		options.webPreferences.preload = preloadPath;
 
-				// Any reason to have this off?
-				options.webPreferences.experimentalFeatures = true;
+		// Any reason to have this off?
+		options.webPreferences.experimentalFeatures = true;
 
-				// Keybase (dumb).
-				options.webPreferences.devTools = true;
+		// Keybase (dumb).
+		options.webPreferences.devTools = true;
 
-				// TODO: Check for MS Teams compatibility.
+		// TODO: Check for MS Teams compatibility.
 
-				// @ts-ignore
-				const window = new BrowserWindowTarget(options, ...rest);
+		// @ts-ignore
+		const window = new target(options);
 
-				// Put the location and the original preload in a place the main IPC can easily reach.
-				(window.webContents as KernelWebContents).kernelWindowData = {
-					originalPreload: originalPreload,
-					windowOptions: options,
-				};
+		// Put the location and the original preload in a place the main IPC can easily reach.
+		// @ts-ignore
+		window.webContents.kernelWindowData = {
+			originalPreload: originalPreload,
+			windowOptions: options,
+		};
 
-				return window;
-			},
-		});
-
-		return BrowserWindowProxy;
-	}
+		return window;
+	},
 });
 
 export function patch(
@@ -84,3 +68,15 @@ export function patch(
 export function unpatch(id: string): boolean {
 	return delete patches[id];
 }
+
+// Get the path to Electron to replace it.
+// Even though we're in ESM this works because transpilation.
+const electronPath = require.resolve("electron");
+// Delete Electron from the require cache because it's a getter.
+delete require.cache[electronPath].exports;
+// Replace it with the a new Electron that has the ProxiedBrowserWindow.
+// TODO: Look at possible problems if getters aren't used.
+require.cache[electronPath].exports = {
+	...electron,
+	BrowserWindow: ProxiedBrowserWindow,
+};
