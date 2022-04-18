@@ -8,10 +8,9 @@ import glob from "glob";
 import asar from "asar";
 import { exec } from "child_process";
 import minimist from "minimist";
-import { dirname } from "path";
 import { fileURLToPath } from "url";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const argv = minimist(process.argv.slice(2));
 
@@ -32,11 +31,8 @@ const sourceFiles = (
 	)
 ).map((p) => ({
 	input: p,
-	// Dumb make better.
-	output: p
-		.replace("/src/", "/transpiled/")
-		.replace("\\src\\", "\\transpiled\\")
-		.replace(/\.tsx?$/, ".js"),
+	// Less dumb make better.
+	output: path.join(path.dirname(p).replace("src", "transpiled"), path.basename(p).replace(/\.tsx?$/, ".js")),
 }));
 
 for (const file of sourceFiles) {
