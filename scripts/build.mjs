@@ -32,11 +32,8 @@ const sourceFiles = (
 	)
 ).map((p) => ({
 	input: p,
-	// Dumb make better.
-	output: p
-		.replace("/src/", "/transpiled/")
-		.replace("\\src\\", "\\transpiled\\")
-		.replace(/\.tsx?$/, ".js"),
+	// Less dumb make better.
+	output: path.join(__dirname, "..", "transpiled", path.basename(p.replace(/\.tsx?$/, ".js"))),
 }));
 
 for (const file of sourceFiles) {
