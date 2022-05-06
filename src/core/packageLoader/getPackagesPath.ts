@@ -16,27 +16,16 @@ switch (processLocation()) {
 function getPackagesPath(): string {
 	switch (processLocation()) {
 		case "MAIN":
-			const origPath = [__dirname, "..", "..", ".."]; //back out of ASAR
-			const kernelPath = origPath;
+			const kernelPath = path.join(__dirname, "..", "..", "..");
+			const packagesPath = path.resolve(kernelPath, "packages");
 
-			while (
-				!fs.existsSync(path.resolve(...kernelPath, "packages")) ||
-				!path.resolve(...kernelPath) === "/"  ||
-				!path.resolve(...kernelPath) === "C:"
-			) {
-			  kernelPath.push("..");
-			}
-			
-			let packagesPath = path.resolve(...kernelPath, "packages");
-			
-			if(!fs.existsSync(packagesPath)) {
-				packagesPath = path.resolve(...origPath, "packages");
+			if (!fs.existsSync(packagesPath)) {
 				console.log(
 					`No package directory found. Creating one at "${packagesPath}"`
 				);
 				fs.mkdirSync(packagesPath);
 			}
-	
+
 			return packagesPath;
 
 		case "PRELOAD":
