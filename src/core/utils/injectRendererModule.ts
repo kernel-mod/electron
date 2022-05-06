@@ -1,4 +1,4 @@
-import resolve from "../preload/resolve";
+import resolve from "../../preload/resolve";
 
 /**
  * A function for the PRELOAD that injects a new separate module into the renderer.
@@ -20,10 +20,12 @@ export default async function injectRendererModule({
 		document.createElement("script"),
 		{
 			type: "module",
-			async: (!sync).toString(),
 			src: `kernel${sync ? "-sync" : ""}://${resolve(script)}`,
 		}
 	);
+	if (!sync) {
+		scriptElement.setAttribute("async", "true");
+	}
 
 	if (onload) scriptElement.addEventListener("load", onload);
 	while (!document.documentElement) {

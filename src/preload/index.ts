@@ -1,43 +1,39 @@
-import { contextBridge, ipcRenderer } from "electron";
+// Set up the require patch for aliases.
+import "../main/alias";
+import { ipcRenderer, contextBridge } from "electron";
 import path from "path";
-import injectRendererModule from "../core/injectRendererModule";
-import * as packageLoader from "../core/packageLoader";
+import injectRendererModule from "#kernel/core/utils/injectRendererModule";
+import * as packageLoader from "#kernel/core/packageLoader";
+import Logger from "#kernel/core/Logger";
 
 ipcRenderer.sendSync("KERNEL_SETUP_RENDERER_HOOK");
-
-// Initialize the renderer bridge.
-require("./renderer/bridge/index.js");
-
-packageLoader.loadPackages(packageLoader.getOgre(), false);
-
-injectRendererModule({
-	script: path.join(__dirname, "renderer", "index.js"),
-});
-
-// const packagesPath = packageLoader.getPackagesPath();
-// const ogre = packageLoader.getOgre();
-
-// for (const layer of ogre) {
-// 	for (const packageID of layer) {
-// 		const packagePreload = path.join(packagesPath, packageID, "preload.js");
-// 		const packageRenderer = path.join(packagesPath, packageID, "renderer.js");
-
-// 		// if (fs.existsSync(packagePreload)) {
-// 		// 	console.log(require(packagePreload));
-// 		// }
-// 	}
-// }
 
 // This is in the preload so we need to use the IPC to get the data from the main process where the BrowserWindow is injected.
 const preloadData = ipcRenderer.sendSync("KERNEL_WINDOW_DATA");
 
 // If context isolation is off, this should be patched to make sure everything complies.
-if (!!preloadData?.windowOptions?.contextIsolation) {
+const hasContextIsolation =
+	preloadData.windowOptions?.webPreferences?.contextIsolation ?? true;
+
+Logger.log("ContextIsolation:", hasContextIsolation);
+if (!hasContextIsolation) {
 	contextBridge.exposeInMainWorld = function (key, value) {
 		window[key] = value;
 	};
 }
 
+// Initialize the renderer bridge.
+require("#kernel/preload/bridge");
+
+packageLoader.loadPackages(packageLoader.getOgre(), false);
+
+Logger.log(path.join(__dirname, "..", "renderer", "index.js"));
+injectRendererModule({
+	script: path.join(__dirname, "..", "renderer", "index.js"),
+	sync: true,
+});
+
 if (preloadData?.originalPreload) {
+	Logger.log("Running original preload:", preloadData.originalPreload);
 	require(preloadData.originalPreload);
 }

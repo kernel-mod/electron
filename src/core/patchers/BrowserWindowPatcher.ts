@@ -1,14 +1,34 @@
-import electron from "electron";
+import electron, { BrowserWindow } from "electron";
 import path from "path";
 
-console.log("Patching Electron's BrowserWindow.");
+export type PatchFunction = (
+	target: typeof electron.BrowserWindow,
+	argArray: any[],
+	newTarget: Function
+) => object;
+export type UnpatchFunction = () => boolean;
 
-const preloadPath = path.join(__dirname, "preload");
+export const patches: {
+	[id: string]: PatchFunction;
+} = {};
+
+export const originalBrowserWindow = BrowserWindow;
+
+const preloadPath = path.join(__dirname, "..", "..", "preload");
 
 // Extending the class does not work.
 export const ProxiedBrowserWindow = new Proxy(electron.BrowserWindow, {
 	construct(target, args) {
 		const options: electron.BrowserWindowConstructorOptions = args[0];
+
+		for (const [id, func] of Object.entries(patches)) {
+			try {
+				const override = func.call(target, options);
+				if (override != null) return override;
+			} catch (e) {
+				console.error(`Failed to patch ${id}:`, e);
+			}
+		}
 
 		const originalPreload = options.webPreferences.preload;
 
@@ -35,6 +55,19 @@ export const ProxiedBrowserWindow = new Proxy(electron.BrowserWindow, {
 		return window;
 	},
 });
+
+export function patch(
+	id: string,
+	patchFunction: PatchFunction
+): UnpatchFunction {
+	if (patches[id]) throw `BrowserWindow patch "${id}" already exists.`;
+	patches[id] = patchFunction;
+	return () => unpatch(id);
+}
+
+export function unpatch(id: string): boolean {
+	return delete patches[id];
+}
 
 // Get the path to Electron to replace it.
 // Even though we're in ESM this works because transpilation.

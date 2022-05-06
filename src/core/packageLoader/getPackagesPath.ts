@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
-import memoize from "../memoize";
-import processLocation from "../processLocation";
+import memoize from "../utils/memoize";
+import processLocation from "../utils/processLocation";
 import { ipcMain, ipcRenderer } from "electron";
 
 switch (processLocation()) {
@@ -16,36 +16,18 @@ switch (processLocation()) {
 function getPackagesPath(): string {
 	switch (processLocation()) {
 		case "MAIN":
-			let lastPath = "";
 			const kernelPath = path.join(__dirname, "..", "..", "..");
-			let currentPath = kernelPath;
-			let packagesPath = path.join(currentPath, "packages");
+			const packagesPath = path.resolve(kernelPath, "packages");
 
-			// Weird thing???
-			// No idea if this is still needed but I'm not risking removing it.
-			"";
-
-			while (
-				currentPath &&
-				currentPath !== lastPath &&
-				!fs.existsSync(packagesPath)
-			) {
-				lastPath = currentPath;
-				currentPath = path.join(currentPath, "..");
-				packagesPath = path.join(currentPath, "packages");
-			}
-
-			// If it wasn't found, create the "packages" folder.
 			if (!fs.existsSync(packagesPath)) {
-				const createdPackagesPath = path.join(kernelPath, "packages");
 				console.log(
-					`No packages directory found. Creating one at "${createdPackagesPath}".`
+					`No package directory found. Creating one at "${packagesPath}"`
 				);
-				fs.mkdirSync(createdPackagesPath);
-				return createdPackagesPath;
+				fs.mkdirSync(packagesPath);
 			}
 
 			return packagesPath;
+
 		case "PRELOAD":
 			return ipcRenderer.sendSync("KERNEL_getPackagesPath");
 	}

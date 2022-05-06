@@ -1,9 +1,14 @@
 {
 	"compilerOptions": {
-		"module": "ESNext",
-		"target": "ES2015",
+		"module": "CommonJS",
+		"target": "ES2017",
 		"moduleResolution": "node",
-		"allowSyntheticDefaultImports": true
+		"allowSyntheticDefaultImports": true,
+		"baseUrl": "src",
+		"paths": {
+			"#kernel/*": ["*"]
+		},
+		"outDir": "./transpiled"
 	},
 	"include": ["src/**/*"]
 }

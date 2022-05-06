@@ -1,5 +1,5 @@
 import { ipcMain, ipcRenderer, BrowserWindow } from "electron";
-import processLocation from "../processLocation";
+import processLocation from "../utils/processLocation";
 
 const listeners: {
 	[id: string]: ((...data: any) => void)[];

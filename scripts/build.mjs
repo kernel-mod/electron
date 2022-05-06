@@ -50,7 +50,7 @@ for (const file of sourceFiles) {
 					importAssertions: true,
 				},
 				transform: {},
-				target: "es2016",
+				target: "es2017",
 				loose: true,
 				externalHelpers: false,
 				keepClassNames: true,
@@ -58,10 +58,6 @@ for (const file of sourceFiles) {
 					compress: false, // TODO: Figure out why this breaks package loading in main.
 					mangle: production,
 				},
-				// paths: {
-				// 	"@kernel": ["../core/src/index.js"],
-				// 	"@kernel/*": ["../core/src/*"],
-				// },
 			},
 			module: {
 				type: "commonjs",
@@ -108,9 +104,11 @@ await new Promise((resolve) =>
 		}
 	)
 );
+
+await fs.ensureDir(path.join(baseDir, "transpiled", "renderer"));
 await fs.copyFile(
 	path.join(baseDir, "..", "browser", "dist", "index.js"),
-	path.join(baseDir, "transpiled", "preload", "renderer", "index.js")
+	path.join(baseDir, "transpiled", "renderer", "index.js")
 );
 
 console.time("Successfully packed");

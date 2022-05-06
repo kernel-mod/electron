@@ -9,11 +9,7 @@ import loadedPackages from "./loadedPackages";
 import startPackage from "./startPackage";
 import stopPackage from "./stopPackage";
 
-import { ipcMain } from "electron";
-import path from "path";
-import fs from "fs";
-
-import processLocation from "../processLocation";
+import processLocation from "../utils/processLocation";
 
 export {
 	getPackages,
