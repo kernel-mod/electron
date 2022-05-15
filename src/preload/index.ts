@@ -1,9 +1,10 @@
 // Set up the require patch for aliases.
-import "../main/alias";
+import "../core/makeAlias";
+
 import { ipcRenderer, contextBridge } from "electron";
 import path from "path";
 import injectRendererModule from "#kernel/core/utils/injectRendererModule";
-import * as packageLoader from "#kernel/core/packageLoader";
+import * as packageLoader from "#kernel/core/packageLoader/index";
 import Logger from "#kernel/core/Logger";
 import getWebPreference from "#kernel/core/utils/getWebPreference";
 

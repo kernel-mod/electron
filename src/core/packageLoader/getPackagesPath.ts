@@ -3,6 +3,7 @@ import path from "path";
 import memoize from "../utils/memoize";
 import processLocation from "../utils/processLocation";
 import { ipcMain, ipcRenderer } from "electron";
+import Logger from "../Logger";
 
 switch (processLocation()) {
 	case "MAIN":
@@ -16,27 +17,21 @@ switch (processLocation()) {
 function getPackagesPath(): string {
 	switch (processLocation()) {
 		case "MAIN":
-			const origPath = [__dirname, "..", "..", ".."]; //back out of ASAR
-			const kernelPath = origPath;
+			const packagesPath = path.resolve(
+				__dirname,
+				"..",
+				"..",
+				"..",
+				"packages"
+			);
 
-			while (
-				!fs.existsSync(path.resolve(...kernelPath, "packages")) ||
-				!path.resolve(...kernelPath) === "/"  ||
-				!path.resolve(...kernelPath) === "C:"
-			) {
-			  kernelPath.push("..");
-			}
-			
-			let packagesPath = path.resolve(...kernelPath, "packages");
-			
-			if(!fs.existsSync(packagesPath)) {
-				packagesPath = path.resolve(...origPath, "packages");
-				console.log(
+			if (!fs.existsSync(packagesPath)) {
+				Logger.warn(
 					`No package directory found. Creating one at "${packagesPath}"`
 				);
 				fs.mkdirSync(packagesPath);
 			}
-	
+
 			return packagesPath;
 
 		case "PRELOAD":

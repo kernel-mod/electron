@@ -1,4 +1,5 @@
 {
+	"version": "0.1.0",
 	"main": "index.js",
 	"scripts": {
 		"build": "node ./scripts/build.mjs",
@@ -11,6 +12,8 @@
 		"electron": "^13.3.0",
 		"fs-extra": "^10.0.0",
 		"glob": "^7.2.0",
-		"minimist": "^1.2.5"
+		"minimist": "^1.2.5",
+		"vite": "^2.9.6",
+		"vite-plugin-node": "^0.0.19"
 	}
 }

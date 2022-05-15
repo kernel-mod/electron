@@ -6,7 +6,7 @@
 		"allowSyntheticDefaultImports": true,
 		"baseUrl": "src",
 		"paths": {
-			"#kernel/*": ["*"]
+			"#kernel/*": ["./*"]
 		},
 		"outDir": "./transpiled"
 	},

@@ -1,10 +1,20 @@
+// Set up the error window.
+import makeErrorWindow from "../ui/ErrorWindow/index";
+process.on("uncaughtException", function (error) {
+	console.error(error);
+	makeErrorWindow(error);
+});
+
 // Set up the require patch for aliases.
-import "./alias";
+import "../core/makeAlias";
+
+import Logger from "#kernel/core/Logger";
+// import startOriginal, { started } from "./main/startOriginal";
 
 import { app } from "electron";
-import * as packageLoader from "#kernel/core/packageLoader";
-import "#kernel/core/patchers/BrowserWindowPatcher";
-import Logger from "#kernel/core/Logger";
+import initIPC from "./ipc";
+import regiserProtocols from "./registerProtocols";
+import startOriginal from "./startOriginal";
 
 export default (options: { startOriginal?: boolean } = {}) => {
 	options.startOriginal ??= false;
@@ -13,19 +23,16 @@ export default (options: { startOriginal?: boolean } = {}) => {
 
 	Logger.log("Loading Kernel.");
 
-	require("./registerProtocols");
+	regiserProtocols();
 
-	packageLoader.loadPackages(packageLoader.getOgre(), false);
+	// packageLoader.loadPackages(packageLoader.getOgre(), false);
 
 	app.on("ready", async () => {
 		Logger.time("Loaded after app ready in");
 
-		await Promise.all([
-			// Set up IPC.
-			import("./ipc"),
-		]).then(() => {
-			Logger.timeEnd("Loaded after app ready in");
-		});
+		initIPC();
+
+		Logger.timeEnd("Loaded after app ready in");
 	});
 
 	Logger.timeEnd("Loaded before app ready in");
@@ -34,6 +41,6 @@ export default (options: { startOriginal?: boolean } = {}) => {
 	if (options.startOriginal) {
 		// Start the app.
 		// Run with require to make sure it doesn't await in main process because that can be bad.
-		require("./startOriginal");
+		startOriginal();
 	}
 };

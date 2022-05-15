@@ -1,5 +1,5 @@
 # Don't commit the built files.
-transpiled
+temp
 dist
 # This is copied in by the builder.
 src/preload/renderer.js

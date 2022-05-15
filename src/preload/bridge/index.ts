@@ -7,8 +7,7 @@ declare global {
 
 import { contextBridge, ipcRenderer } from "electron";
 import packages from "./packages";
-import broadcast from "#kernel/core/broadcast";
-import { patchedRequire } from "#kernel/core/patchers/ImportPatcher";
+import broadcast from "#kernel/broadcast";
 
 const api = {
 	broadcast,

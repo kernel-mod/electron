@@ -1,12 +1,12 @@
 #!/usr/bin/env zx
 
-import fs from "fs-extra";
 import path from "path";
+import fs, { copySync } from "fs-extra";
+import asar from "asar";
+import { builtinModules } from "module";
 import swc from "@swc/core";
 import { promisify } from "util";
 import glob from "glob";
-import asar from "asar";
-import { exec } from "child_process";
 import minimist from "minimist";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
@@ -15,33 +15,38 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const argv = minimist(process.argv.slice(2));
 
-try {
-	await fs.emptyDir("./dist");
-} catch {}
-await fs.rm("./transpiled", { recursive: true, force: true });
+const externals = ["electron", /^#kernel(.*)/, "./core.js", ...builtinModules];
+// It's externals but as an object where the keys and values are the items in the array.
+const externalNames = externals.reduce((acc, cur) => {
+	acc[cur] = cur;
+	return acc;
+}, {});
+
+await fs.rm("./temp", { recursive: true, force: true });
 
 console.time("Successfully built");
+
+console.time("Successfully transpiled");
 
 const production = !argv.hasOwnProperty("dev");
 
 const globp = promisify(glob);
 
-const sourceFiles = (
-	await globp(path.join(__dirname, "..", "src", "**/*.ts"), {}).catch((e) =>
-		console.error("Failed to glob source files:", e)
-	)
-).map((p) => ({
-	input: p,
-	// Dumb make better.
-	output: p
-		.replace("/src/", "/transpiled/")
-		.replace("\\src\\", "\\transpiled\\")
-		.replace(/\.tsx?$/, ".js"),
-}));
+copySync("./src", "./temp");
+copySync("./package.json", "./temp/package.json");
+
+let sourceFiles = await globp(
+	path.join(__dirname, "..", "temp", "**/*.ts"),
+	{}
+).catch((e) => console.error("Failed to glob source files:", e));
+sourceFiles = sourceFiles.reduce((acc, cur) => {
+	acc.push({ input: cur, output: cur.replace(/\.tsx?$/, ".js") });
+	return acc;
+}, []);
 
 for (const file of sourceFiles) {
 	const code = fs.readFileSync(file.input, "utf8");
-	swc
+	await swc
 		.transform(code, {
 			// Some options cannot be specified in .swcrc
 			filename: path.basename(file.input),
@@ -75,50 +80,17 @@ for (const file of sourceFiles) {
 		})
 		.then((output) => {
 			fs.ensureFileSync(file.output);
-			fs.writeFile(file.output, output.code);
+			fs.writeFileSync(file.output, output.code);
+			fs.rmSync(file.input);
 		});
 }
 
-// Save this for possibly using it in the future.
-// await fs.copy(
-// 	"./node_modules/@swc/helpers",
-// 	"./transpiled/node_modules/@swc/helpers",
-// 	{
-// 		recursive: true,
-// 		// filter: (src, dest) => {
-// 		// 	return ![".pnpm", ".bin"].includes(path.basename(src));
-// 		// },
-// 		dereference: true,
-// 	}
-// );
-
-const baseDir = path.join(__dirname, "..");
-
-// Build the renderer and copy it over.
-await new Promise((resolve) =>
-	exec(
-		`cd ${path.join(baseDir, "..", "browser")} && pnpm run build`,
-		(err, stdout, stderr) => {
-			if (err) {
-				console.error(err);
-				return;
-			}
-			console.log(stdout);
-			resolve();
-		}
-	)
-);
-
-await fs.ensureDir(path.join(baseDir, "transpiled", "renderer"));
-await fs.copyFile(
-	path.join(baseDir, "..", "browser", "dist", "index.js"),
-	path.join(baseDir, "transpiled", "renderer", "index.js")
-);
+console.timeEnd("Successfully transpiled");
 
 console.time("Successfully packed");
 await asar.createPackage(
-	path.join(__dirname, "..", "transpiled"),
-	path.join(__dirname, "..", "dist", "kernel.asar")
+	path.resolve("temp"),
+	path.resolve("dist", "kernel.asar")
 );
 console.timeEnd("Successfully packed");
 
