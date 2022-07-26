@@ -14,7 +14,7 @@ export default function loadPackage(
 
 	const pack = getPackages()[packageID];
 
-	const packageScript = path.join(pack.path, `${context}.js`);
+	const packageScript = path.join(pack.path, `${pack[context] ?? context}${pack[context]?.endsWith(".js") ? "" : ".js"}`);
 
 	if (fs.existsSync(packageScript)) {
 		const packageExport = require(packageScript);
