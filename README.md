@@ -29,11 +29,17 @@ Place these in the new `app` folder you made. Don't forget to change the `"locat
 #### `index.js`
 
 ```js
+const pkg = require("./package.json");
+const Module = require("module");
 const path = require("path");
-require(path.join(
-	require(path.join(__dirname, "package.json")).location,
-	"kernel.asar"
-));
+
+try {
+  const kernel = require(path.join(pkg.location, "kernel.asar"));
+  if (kernel?.default) kernel.default({ startOriginal: true });
+} catch(e) {
+  console.error("Kernel failed to load: ", e.message);
+  Module._load(path.join(__dirname, "..", "app-original.asar"), null, true);
+}
 ```
 
 #### `package.json`
