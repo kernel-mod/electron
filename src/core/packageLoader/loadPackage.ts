@@ -22,7 +22,7 @@ export default function loadPackage(
       } catch {
          return false;
       }
-   })()
+   })();
 
 	if (hasScript) {
 		const packageExport = require(packageScript);
