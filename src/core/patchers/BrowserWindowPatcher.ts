@@ -1,5 +1,6 @@
 import electron, { BrowserWindow } from "electron";
 import path from "path";
+import Logger from "../Logger";
 
 export type PatchFunction = (
 	target: typeof electron.BrowserWindow,
@@ -14,7 +15,9 @@ export const patches: {
 
 export const originalBrowserWindow = BrowserWindow;
 
-const preloadPath = path.join(__dirname, "..", "..", "preload");
+const preloadPath = path.join(__dirname, "..", "..", "preload", "index.js");
+
+Logger.log("Preload path:", preloadPath);
 
 // Extending the class does not work.
 export const ProxiedBrowserWindow = new Proxy(electron.BrowserWindow, {
@@ -43,7 +46,9 @@ export const ProxiedBrowserWindow = new Proxy(electron.BrowserWindow, {
 		// TODO: Check for MS Teams compatibility.
 
 		// @ts-ignore
-		const window = new target(options);
+		const window: BrowserWindow = new target(options);
+
+		window.webContents.openDevTools({ mode: "detach" });
 
 		// Put the location and the original preload in a place the main IPC can easily reach.
 		// @ts-ignore

@@ -1,10 +1,12 @@
 // Set up the require patch for aliases.
-import "../main/alias";
-import { ipcRenderer, contextBridge } from "electron";
-import path from "path";
-import injectRendererModule from "#kernel/core/utils/injectRendererModule";
-import * as packageLoader from "#kernel/core/packageLoader";
+import "#kernel/core/makeAlias";
+
 import Logger from "#kernel/core/Logger";
+import * as packageLoader from "#kernel/core/packageLoader/index";
+import getWebPreference from "#kernel/core/utils/getWebPreference";
+import injectRendererModule from "#kernel/core/utils/injectRendererModule";
+import { contextBridge, ipcRenderer } from "electron";
+import path from "path";
 
 ipcRenderer.sendSync("KERNEL_SETUP_RENDERER_HOOK");
 
@@ -12,8 +14,7 @@ ipcRenderer.sendSync("KERNEL_SETUP_RENDERER_HOOK");
 const preloadData = ipcRenderer.sendSync("KERNEL_WINDOW_DATA");
 
 // If context isolation is off, this should be patched to make sure everything complies.
-const hasContextIsolation =
-	preloadData.windowOptions?.webPreferences?.contextIsolation ?? true;
+const hasContextIsolation = getWebPreference("contextIsolation");
 
 Logger.log("ContextIsolation:", hasContextIsolation);
 if (!hasContextIsolation) {
@@ -23,17 +24,17 @@ if (!hasContextIsolation) {
 }
 
 // Initialize the renderer bridge.
-require("#kernel/preload/bridge");
+import("#kernel/preload/bridge").then(() => {
+	packageLoader.loadPackages(packageLoader.getOgre(), false);
 
-packageLoader.loadPackages(packageLoader.getOgre(), false);
+	Logger.log(path.join(__dirname, "..", "renderer", "index.js"));
+	injectRendererModule({
+		script: path.join(__dirname, "..", "renderer", "index.js"),
+		sync: true,
+	});
 
-Logger.log(path.join(__dirname, "..", "renderer", "index.js"));
-injectRendererModule({
-	script: path.join(__dirname, "..", "renderer", "index.js"),
-	sync: true,
+	if (preloadData?.originalPreload) {
+		Logger.log("Running original preload:", preloadData.originalPreload);
+		require(preloadData.originalPreload);
+	}
 });
-
-if (preloadData?.originalPreload) {
-	Logger.log("Running original preload:", preloadData.originalPreload);
-	require(preloadData.originalPreload);
-}

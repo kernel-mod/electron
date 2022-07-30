@@ -1,3 +1,3 @@
-import EventListener from "#kernel/core/EventListener";
+import EventEmitter from "#kernel/core/EventEmitter";
 
-export default new EventListener();
+export default new EventEmitter();

@@ -5,9 +5,9 @@ declare global {
 	}
 }
 
+import broadcast from "#kernel/core/broadcast";
 import { contextBridge, ipcRenderer } from "electron";
 import packages from "./packages";
-import broadcast from "#kernel/core/broadcast";
 
 const api = {
 	broadcast,

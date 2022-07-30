@@ -3,6 +3,7 @@ import path from "path";
 import memoize from "../utils/memoize";
 import processLocation from "../utils/processLocation";
 import { ipcMain, ipcRenderer } from "electron";
+import Logger from "../Logger";
 
 switch (processLocation()) {
 	case "MAIN":
@@ -16,11 +17,16 @@ switch (processLocation()) {
 function getPackagesPath(): string {
 	switch (processLocation()) {
 		case "MAIN":
-			const kernelPath = path.join(__dirname, "..", "..", "..");
-			const packagesPath = path.resolve(kernelPath, "packages");
+			const packagesPath = path.resolve(
+				__dirname,
+				"..",
+				"..",
+				"..",
+				"packages"
+			);
 
 			if (!fs.existsSync(packagesPath)) {
-				console.log(
+				Logger.warn(
 					`No package directory found. Creating one at "${packagesPath}"`
 				);
 				fs.mkdirSync(packagesPath);

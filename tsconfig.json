@@ -1,14 +1,14 @@
 {
 	"compilerOptions": {
-		"module": "CommonJS",
+		"module": "ESNext",
 		"target": "ES2017",
 		"moduleResolution": "node",
 		"allowSyntheticDefaultImports": true,
 		"baseUrl": "src",
 		"paths": {
-			"#kernel/*": ["*"]
-		},
-		"outDir": "./transpiled"
+			"#kernel": ["./index.ts"],
+			"#kernel/*": ["./*"]
+		}
 	},
 	"include": ["src/**/*"]
 }

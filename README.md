@@ -12,7 +12,7 @@ Get the [CLI installer](https://github.com/kernel-mod/installer-cli) and run it.
 
 This will be easier _eventually_, don't worry. But making the mod more functional and easier for developers is a high priority.
 
-First of all, you need to download Kernel. You can either download [the latest prebuilt](https://github.com/kernel-mod/electron/releases), or you can build it by yourself (more info later on).
+First of all, you need to download Kernel. Currently you need to build Kernel yourself because I'm too lazy to write a CI to build it for you for now.
 
 Every Electron app (that I've seen so far) has a folder where the Electron binary is stored. This main folder is usually in `AppData/Local` on Windows. In that folder there's another folder usually in `resources` called `app`.
 
@@ -29,17 +29,11 @@ Place these in the new `app` folder you made. Don't forget to change the `"locat
 #### `index.js`
 
 ```js
-const pkg = require("./package.json");
-const Module = require("module");
 const path = require("path");
-
-try {
-  const kernel = require(path.join(pkg.location, "kernel.asar"));
-  if (kernel?.default) kernel.default({ startOriginal: true });
-} catch(e) {
-  console.error("Kernel failed to load: ", e.message);
-  Module._load(path.join(__dirname, "..", "app-original.asar"), null, true);
-}
+require(path.join(
+	require(path.join(__dirname, "package.json")).location,
+	"kernel.asar"
+));
 ```
 
 #### `package.json`
