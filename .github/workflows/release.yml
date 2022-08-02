@@ -26,13 +26,6 @@ jobs:
         id: now-tag
 
       - uses: actions/checkout@v2
-        with:
-          path: electron
-
-      - uses: actions/checkout@v2
-        with:
-          repository: kernel-mod/browser
-          path: browser
 
       - uses: actions/cache@v2
         with:
