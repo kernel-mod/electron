@@ -7,6 +7,8 @@ function base(...dirs) {
 	return path.join(__dirname, ...dirs);
 }
 
+const prod = process.env.NODE_ENV === "production";
+
 export default defineConfig({
 	resolve: {
 		alias: [
@@ -48,9 +50,9 @@ export default defineConfig({
 			},
 			preserveEntrySignatures: "strict",
 		},
-		minify: "esbuild",
-		sourcemap: "hidden",
-		watch: {},
+		minify: prod ? "terser" : "esbuild",
+		sourcemap: prod ? "hidden" : "inline",
+		watch: prod ? null : {},
 	},
 	plugins: [
 		{
