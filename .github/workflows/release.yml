@@ -1,8 +1,6 @@
 name: Release
 
 on:
-  push:
-    branches: [ master ]
   workflow_dispatch:
 
 jobs:
@@ -18,7 +16,7 @@ jobs:
           NEWLINE="${NEWLINE//$'\r'/'%0D'}"
           echo "::set-output name=content::$NEWLINE"
         id: newline
-        
+
       - name: Current Date
         run: echo "::set-output name=content::$(date +'%Y-%m-%d %H:%M:%S')"
         id: now-name
@@ -26,27 +24,25 @@ jobs:
       - name: Current Date
         run: echo "::set-output name=content::$(date +'%Y-%m-%d-%H-%M-%S')"
         id: now-tag
-        
+
       - uses: actions/checkout@v2
         with:
           path: electron
-          
+
       - uses: actions/checkout@v2
         with:
           repository: kernel-mod/browser
           path: browser
-          
+
       - uses: actions/cache@v2
         with:
           path: ~/.pnpm-store
           key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-
-            
-      - uses: pnpm/action-setup@v2.0.1   
-        with:  
-          version: 6.20.1
-          
+
+      - uses: pnpm/action-setup@v2
+
       - name: Build ASAR
         run: |
           cd browser
@@ -60,10 +56,10 @@ jobs:
         with:
           repository: ${{ github.repository }}
           latest: true
-          fileName: '*'
-          out-file-path: './latest-release'
+          fileName: "*"
+          out-file-path: "./latest-release"
           token: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - if: hashFiles('latest-release/*') != hashFiles('electron/dist/*')
         name: Release
         uses: softprops/action-gh-release@v0.1.13
