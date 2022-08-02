@@ -45,9 +45,6 @@ jobs:
 
       - name: Build ASAR
         run: |
-          cd browser
-          pnpm i
-          cd ../electron
           pnpm i
           pnpm run build
 
