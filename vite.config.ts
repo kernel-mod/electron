@@ -17,9 +17,9 @@ export default defineConfig({
 			},
 		],
 	},
-	mode: "node",
 	build: {
-		target: "es2017",
+		ssr: true,
+		target: "node12",
 		outDir: "transpiled",
 		rollupOptions: {
 			input: {
@@ -43,11 +43,12 @@ export default defineConfig({
 				},
 				preserveModules: true,
 				preserveModulesRoot: "src",
-				format: "esm",
+				format: "commonjs",
 				exports: "named",
 			},
 			preserveEntrySignatures: "strict",
 		},
+		minify: "esbuild",
 		sourcemap: "hidden",
 		watch: {},
 	},
