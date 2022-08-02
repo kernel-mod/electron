@@ -2,7 +2,12 @@ name: Build
 
 on:
   pull_request:
-    branches: [ master ]
+    branches:
+      - "**"
+  push:
+    branches:
+      - "**"
+      - "!master"
   workflow_call:
 
 jobs:
