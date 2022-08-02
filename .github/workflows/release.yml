@@ -1,6 +1,9 @@
 name: Release
 
 on:
+  push:
+    branches:
+      - "master"
   workflow_dispatch:
 
 jobs:
@@ -34,11 +37,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-
 
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: latest
+          run_install: true
 
       - name: Build ASAR
         run: |
-          pnpm i
           pnpm run build
 
       - name: Download Latest Release
@@ -57,4 +62,4 @@ jobs:
           name: ${{ steps.now-name.outputs.content }}
           tag_name: ${{ steps.now-tag.outputs.content }}
           body: ${{ join(github.event.commits.*.message, steps.newline.outputs.content) }}
-          files: "electron/dist/kernel.asar"
+          files: "dist/kernel.asar"
