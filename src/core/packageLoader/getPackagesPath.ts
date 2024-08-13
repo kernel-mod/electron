@@ -16,17 +16,26 @@ switch (processLocation()) {
 function getPackagesPath(): string {
 	switch (processLocation()) {
 		case "MAIN":
+			// Directory in which kernel.asar is in
 			const kernelPath = path.join(__dirname, "..", "..", "..");
-			const packagesPath = path.resolve(kernelPath, "packages");
+			const rootPath = path.parse(__dirname).root;
+			let currentPath = kernelPath;
 
-			if (!fs.existsSync(packagesPath)) {
-				console.log(
-					`No package directory found. Creating one at "${packagesPath}"`
-				);
+			while (true) {
+				if (fs.existsSync(path.join(currentPath, "packages"))) break;
+				if (currentPath !== rootPath) {
+					// Traverse further up
+					currentPath = path.parse(currentPath).dir;
+					continue;
+				};
+
+				const packagesPath = path.join(kernelPath, "packages");
+				console.log(`No package directory found. Creating one at "${packagesPath}"`);
 				fs.mkdirSync(packagesPath);
+				return packagesPath;
 			}
 
-			return packagesPath;
+			return path.join(currentPath, "packages");
 
 		case "PRELOAD":
 			return ipcRenderer.sendSync("KERNEL_getPackagesPath");
